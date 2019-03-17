@@ -69,6 +69,12 @@ def switch_to_base():
     print("Switching to base")
     return base_layer
 
+def switch_to_sym_toggle_shift():
+    remove_all_files()
+    make_file(files["sym_toggle"])
+    print("Switching to toggle shift")
+    return sym_layer_toggle_shift
+
 def switch_to_sym_toggle():
     remove_all_files()
     make_file(files["sym_toggle"])
@@ -120,7 +126,7 @@ def switch_to_function_maker_key_pressed(key):
               **generate_remap_pass_throughs({"[": "<backspace>", "<backspace>": "<capslock>"})}
     return switch_to_function
 
-modifier_keys = set(["<alt_l>", "<alt_r>", "<capslock>", "<enter>"])
+modifier_keys = set(["<alt_l>", "<alt_r>", "<capslock>", "<enter>", "<shift_l>", "<shift_r>"])
 
 base_layer = {("<alt_l>", KeyEvent.key_up): nothing,
               ("<alt_l>", KeyEvent.key_down): switch_to_sym,
@@ -182,9 +188,33 @@ sym_layer_toggle = {("<alt_l>", KeyEvent.key_up): nothing,
                     ("<alt_r>", KeyEvent.key_up): nothing,
                     ("<alt_r>", KeyEvent.key_down): switch_to_base,
                     ("<alt_r>", KeyEvent.key_hold): nothing,
+                    ("<shift_l>", KeyEvent.key_up): nothing,
+                    ("<shift_l>", KeyEvent.key_down): switch_to_sym_toggle_shift,
+                    ("<shift_l>", KeyEvent.key_hold): nothing,
+                    ("<shift_r>", KeyEvent.key_up): nothing,
+                    ("<shift_r>", KeyEvent.key_down): switch_to_sym_toggle_shift,
+                    ("<shift_r>", KeyEvent.key_hold): nothing,
                     **get_sym_remaps(nothing),
                     **generate_remap_pass_throughs({"<capslock>": "<esc>", "[": "<backspace>",
                                                     "<backspace>": "<capslock>"})}
 
+
+sym_layer_toggle_shift = {("<alt_l>", KeyEvent.key_up): nothing,
+                          ("<alt_l>", KeyEvent.key_down): switch_to_base,
+                          ("<alt_l>", KeyEvent.key_hold): nothing,
+                          ("<alt_r>", KeyEvent.key_up): nothing,
+                          ("<alt_r>", KeyEvent.key_down): switch_to_base,
+                          ("<alt_r>", KeyEvent.key_hold): nothing,
+                          ("<shift_l>", KeyEvent.key_up): switch_to_sym_toggle,
+                          ("<shift_l>", KeyEvent.key_down): nothing,
+                          ("<shift_l>", KeyEvent.key_hold): nothing,
+                          ("<shift_r>", KeyEvent.key_up): switch_to_sym_toggle,
+                          ("<shift_r>", KeyEvent.key_down): nothing,
+                          ("<shift_r>", KeyEvent.key_hold): nothing,
+                          **generate_remap_pass_throughs({"<capslock>": "<esc>", "[": "<backspace>",
+                                                          "<backspace>": "<capslock>"})}
+
+
+current_layer = base_layer
 
 current_layer = base_layer
