@@ -35,7 +35,7 @@ def i3_change_focus(direction):
     return change
 
 files = {"sym": "/tmp/sym_activated", "sym_single": "/tmp/sym_single", "base": "/tmp/base_activated",
-        "sym_toggle": "/tmp/sym_toggle", "function": "/tmp/function_activated"}
+         "sym_toggle": "/tmp/sym_toggle", "function": "/tmp/function_activated"}
 
 def remove_all_files():
     with contextlib.suppress(FileNotFoundError):
@@ -77,20 +77,24 @@ def switch_to_sym_toggle():
 
 def get_function_remaps(callback):
     return {**generate_remap_system_command({"q": ["i3-msg", "workspace", "1"],
-        "w": ["i3-msg", "workspace", "2"], "e": ["i3-msg", "workspace", "3"],
-        "r": ["i3-msg", "workspace", "4"], "t": ["i3-msg", "workspace", "5"],
-        "y": ["i3-msg", "move", "workspace", "1"], "u": ["i3-msg", "move", "workspace", "2"],
-        "i": ["i3-msg", "move", "workspace", "3"], "o": ["i3-msg", "move", "workspace", "4"],
-        "p": ["i3-msg", "move", "workspace", "5"],
-        ";": ["inc_bright"], "'": ["dec_bright"], "z": ["inc_vol", "5"],
-        "x": ["dec_vol", "5"], "c": ["mute_vol"]}, callback),
-        **generate_remap_python_callable({"h": i3_change_focus("h"), "j": i3_change_focus("j"),
-            "k": i3_change_focus("k"), "l": i3_change_focus("l")}, callback),
-        **generate_remap_pass_throughs({"a": "<pageup>", "s": "<pagedown>", "d": "<c-u>", "f": "<c-d>",
-            "n": "<left>", "m": "<down>", ",": "<up>", ".": "<right>"}, callback)
-     # **generate_remap_string({"z": "ryan_greenblatt@brown.edu", "x": "greenblattryan@gmail.com",
-     #     "c": "rgreenblatt"})
-     }
+                                             "w": ["i3-msg", "workspace", "2"],
+                                             "e": ["i3-msg", "workspace", "3"],
+                                             "r": ["i3-msg", "workspace", "4"],
+                                             "t": ["i3-msg", "workspace", "5"],
+                                             "y": ["i3-msg", "move", "workspace", "1"],
+                                             "u": ["i3-msg", "move", "workspace", "2"],
+                                             "i": ["i3-msg", "move", "workspace", "3"],
+                                             "o": ["i3-msg", "move", "workspace", "4"],
+                                             "p": ["i3-msg", "move", "workspace", "5"],
+                                             ";": ["inc_bright"], "'": ["dec_bright"],
+                                             "z": ["inc_vol", "5"], "x": ["dec_vol", "5"],
+                                             "c": ["mute_vol"]}, callback),
+            **generate_remap_python_callable({"h": i3_change_focus("h"), "j": i3_change_focus("j"),
+                                              "k": i3_change_focus("k"), "l": i3_change_focus("l")},
+                                             callback),
+            **generate_remap_pass_throughs({"a": "<pageup>", "s": "<pagedown>", "d": "<c-u>", "f": "<c-d>",
+                                            "n": "<left>", "m": "<down>", ",": "<up>", ".": "<right>"},
+                                           callback)}
 
 def switch_to_function_maker(key, map_to):
     def switch_to_function():
@@ -134,11 +138,11 @@ base_layer = {("<alt_l>", KeyEvent.key_up): nothing,
 
 def get_sym_remaps(callback):
     return generate_remap_pass_throughs({"q": "1", "w": "2", "e": "3", "r": "4", "t": "5", "y": "6",
-                                          "u": "7", "i": "8", "o": "9", "p": "0", "a": "!", "s": "@",
-                                          "d": "#", "f": "$", "g": "%", "h": "^", "j": "&", "k": "*",
-                                          "l": "(", ";": ")", "'": "|", "z": "~", "x": "_", "c": "-",
-                                          "v": "+", "b": "=", "n": "\\", "m": "[", ",": "]", ".": "{",
-                                          "/": "}", "<control_r>": "`", "<control_l>": "`"}, callback)
+                                         "u": "7", "i": "8", "o": "9", "p": "0", "a": "!", "s": "@",
+                                         "d": "#", "f": "$", "g": "%", "h": "^", "j": "&", "k": "*",
+                                         "l": "(", ";": ")", "'": "|", "z": "~", "x": "_", "c": "-",
+                                         "v": "+", "b": "=", "n": "\\", "m": "[", ",": "]", ".": "{",
+                                         "/": "}", "<control_r>": "`", "<control_l>": "`"}, callback)
 
 
 sym_layer = {("<alt_l>", KeyEvent.key_up): switch_to_sym_single,
@@ -148,8 +152,8 @@ sym_layer = {("<alt_l>", KeyEvent.key_up): switch_to_sym_single,
              ("<alt_r>", KeyEvent.key_down): lambda: print("MOD WAS PRESSED SHOULDN'T BE POSSIBLE"),
              ("<alt_r>", KeyEvent.key_hold): nothing,
              **get_sym_remaps(switch_to_sym_key_pressed),
-               **generate_remap_pass_throughs({"<capslock>": "<esc>", "[": "<backspace>",
-                   "<backspace>": "<capslock>"})}
+             **generate_remap_pass_throughs({"<capslock>": "<esc>", "[": "<backspace>",
+                                             "<backspace>": "<capslock>"})}
 
 sym_layer_single = {("<alt_l>", KeyEvent.key_up): lambda: print("MOD WAS RELEASED SHOULDN'T BE POSSIBLE"),
                     ("<alt_l>", KeyEvent.key_down): switch_to_sym_toggle,
@@ -157,9 +161,9 @@ sym_layer_single = {("<alt_l>", KeyEvent.key_up): lambda: print("MOD WAS RELEASE
                     ("<alt_r>", KeyEvent.key_up): lambda: print("MOD WAS RELEASED SHOULDN'T BE POSSIBLE"),
                     ("<alt_r>", KeyEvent.key_down): switch_to_sym_toggle,
                     ("<alt_r>", KeyEvent.key_hold): nothing,
-                                        **get_sym_remaps(switch_to_base),
-                      **generate_remap_pass_throughs({"<capslock>": "<esc>", "[": "<backspace>",
-                           "<backspace>": "<capslock>"})}
+                    **get_sym_remaps(switch_to_base),
+                    **generate_remap_pass_throughs({"<capslock>": "<esc>", "[": "<backspace>",
+                                                    "<backspace>": "<capslock>"})}
 
 
 sym_layer_key_pressed = {("<alt_l>", KeyEvent.key_up): switch_to_base,
@@ -169,8 +173,8 @@ sym_layer_key_pressed = {("<alt_l>", KeyEvent.key_up): switch_to_base,
                          ("<alt_r>", KeyEvent.key_down): lambda: print("MOD WAS PRESSED SHOULDN'T BE POSSIBLE"),
                          ("<alt_r>", KeyEvent.key_hold): nothing,
                          **get_sym_remaps(nothing),
-                           **generate_remap_pass_throughs({"<capslock>": "<esc>", "[": "<backspace>",
-                           "<backspace>": "<capslock>"})}
+                         **generate_remap_pass_throughs({"<capslock>": "<esc>", "[": "<backspace>",
+                                                         "<backspace>": "<capslock>"})}
 
 sym_layer_toggle = {("<alt_l>", KeyEvent.key_up): nothing,
                     ("<alt_l>", KeyEvent.key_down): switch_to_base,
@@ -179,8 +183,8 @@ sym_layer_toggle = {("<alt_l>", KeyEvent.key_up): nothing,
                     ("<alt_r>", KeyEvent.key_down): switch_to_base,
                     ("<alt_r>", KeyEvent.key_hold): nothing,
                     **get_sym_remaps(nothing),
-                      **generate_remap_pass_throughs({"<capslock>": "<esc>", "[": "<backspace>",
-                           "<backspace>": "<capslock>"})}
+                    **generate_remap_pass_throughs({"<capslock>": "<esc>", "[": "<backspace>",
+                                                    "<backspace>": "<capslock>"})}
 
 
 current_layer = base_layer

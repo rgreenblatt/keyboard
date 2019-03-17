@@ -40,5 +40,3 @@ for event in dev.read_loop():
         else:
             print('key not found in known characters')
             forward_event(event)
-
-
