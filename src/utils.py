@@ -1,6 +1,7 @@
 from evdev import KeyEvent, UInput, ecodes as e
-from constants import code_char_map, upper_lower, control_single
-from subprocess import Popen
+from constants import code_char_map, upper_lower, control_single, debug
+from subprocess import Popen, DEVNULL
+import os
 
 ui = UInput()
 
@@ -43,7 +44,7 @@ def generate_remaper(inner_func):
         actions=[KeyEvent.key_down, KeyEvent.key_up, KeyEvent.key_hold]):
         out = {}
         for f, t in character_maps.items():
-            for v in [KeyEvent.key_down, KeyEvent.key_up, KeyEvent.key_hold]:
+            for v in actions:
                 def write_key(t=t, v=v):
                     inner_func(t, v)
                     return callback()
@@ -62,9 +63,19 @@ def send_key(t, v):
         ui.write(e.EV_KEY, code_char_map.inverse[t], v)
     ui.syn()
 
+def run_background(command):
+    try:
+        Popen(command, stdout=DEVNULL).pid
+    except Exception as e:
+        print("Background command error:", e)
+        alert("BACKGROUND PROCESS ERROR", str(e))
+
+def alert(title, text="", time=10):
+    os.system("notify-send -u critical -t {} '{}' '{}'".format(time * 1000, title, text))
+
 def send_system_command(t, v):
     if v == KeyEvent.key_down:
-        pid = Popen(t).pid
+        run_background(t)
 
 def send_string(t, v):
     if v == KeyEvent.key_down:

@@ -2,6 +2,8 @@ from collections import defaultdict
 from evdev import ecodes as e
 from bidict import bidict
 
+debug = False
+
 control_single = {"<c-q>": "q",
                   "<c-w>": "w",
                   "<c-e>": "e",
