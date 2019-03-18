@@ -58,11 +58,21 @@ def switch_to_sym():
     print("Switching to sym") if debug else None
     return sym_layer, set(["<alt_l>", "<alt_r>"])
 
-def switch_to_sym_single():
-    remove_all_files()
-    make_file(files["sym_single"])
-    print("Switching to single") if debug else None
-    return sym_layer_single, None
+def switch_to_sym_maker_single(key, other):
+    def switch_to_sym_single():
+        remove_all_files()
+        make_file(files["sym_single"])
+        print("Switching to single") if debug else None
+        return ({(key, KeyEvent.key_up): lambda: print("MOD WAS RELEASED NOT EXPECTED"),
+                 (key, KeyEvent.key_down): switch_to_sym_toggle,
+                 (key, KeyEvent.key_hold): lambda: print("MOD WAS HELD NOT EXPECTED"),
+                 (other, KeyEvent.key_up): lambda: print("MOD WAS RELEASED NOT EXPECTED"),
+                 (other, KeyEvent.key_down): switch_to_sym,
+                 (other, KeyEvent.key_hold): lambda: print("MOD WAS HELD NOT EXPECTED"),
+                 **base_function, **get_sym_remaps(switch_to_base)},
+                 set(["<alt_l>", "<alt_r>", "<capslock>", "<enter>"]))
+
+    return switch_to_sym_single
 
 def switch_to_sym_key_pressed():
     remove_all_files()
@@ -138,18 +148,20 @@ standard_remaps = {**generate_remap_pass_throughs({"[": "<backspace>"}),
 
 capslock_remap = generate_remap_pass_throughs({"<capslock>": "<esc>"})
 
+base_function = {("<capslock>", KeyEvent.key_up): lambda: print("FUNCTION MOD WAS RELEASED NOT EXPECTED"),
+                 ("<capslock>", KeyEvent.key_down): switch_to_function_maker("<capslock>", "<esc>"),
+                 ("<capslock>", KeyEvent.key_hold): lambda: print("FUNCTION MOD WAS RELEASED NOT EXPECTED"),
+                 ("<enter>", KeyEvent.key_up): lambda: print("FUNCTION MOD WAS RELEASED NOT EXPECTED"),
+                 ("<enter>", KeyEvent.key_down): switch_to_function_maker("<enter>", "<enter>"),
+                 ("<enter>", KeyEvent.key_hold): lambda: print("FUNCTION MOD WAS RELEASED NOT EXPECTED")}
+
 base_layer = {("<alt_l>", KeyEvent.key_up): nothing,
               ("<alt_l>", KeyEvent.key_down): switch_to_sym,
               ("<alt_l>", KeyEvent.key_hold): nothing,
               ("<alt_r>", KeyEvent.key_up): nothing,
               ("<alt_r>", KeyEvent.key_down): switch_to_sym,
               ("<alt_r>", KeyEvent.key_hold): nothing,
-              ("<capslock>", KeyEvent.key_up): lambda: print("FUNCTION MOD WAS RELEASED NOT EXPECTED"),
-              ("<capslock>", KeyEvent.key_down): switch_to_function_maker("<capslock>", "<esc>"),
-              ("<capslock>", KeyEvent.key_hold): lambda: print("FUNCTION MOD WAS RELEASED NOT EXPECTED"),
-              ("<enter>", KeyEvent.key_up): lambda: print("FUNCTION MOD WAS RELEASED NOT EXPECTED"),
-              ("<enter>", KeyEvent.key_down): switch_to_function_maker("<enter>", "<enter>"),
-              ("<enter>", KeyEvent.key_hold): lambda: print("FUNCTION MOD WAS RELEASED NOT EXPECTED"),
+              **base_function,
               **standard_remaps}
 
 def get_sym_remaps(callback):
@@ -161,26 +173,15 @@ def get_sym_remaps(callback):
                                          "/": "}", "<control_r>": "`", "<control_l>": "`"}, callback)
 
 
-sym_layer = {("<alt_l>", KeyEvent.key_up): switch_to_sym_single,
+sym_layer = {("<alt_l>", KeyEvent.key_up): switch_to_sym_maker_single("<alt_l>", "<alt_r>"),
              ("<alt_l>", KeyEvent.key_down): lambda: print("MOD WAS PRESSED NOT EXPECTED"),
              ("<alt_l>", KeyEvent.key_hold): nothing,
-             ("<alt_r>", KeyEvent.key_up): switch_to_sym_single,
+             ("<alt_r>", KeyEvent.key_up): switch_to_sym_maker_single("<alt_r>", "<alt_l>"),
              ("<alt_r>", KeyEvent.key_down): lambda: print("MOD WAS PRESSED NOT EXPECTED"),
              ("<alt_r>", KeyEvent.key_hold): nothing,
              **get_sym_remaps(switch_to_sym_key_pressed),
              **standard_remaps,
              **capslock_remap}
-
-sym_layer_single = {("<alt_l>", KeyEvent.key_up): lambda: print("MOD WAS RELEASED NOT EXPECTED"),
-                    ("<alt_l>", KeyEvent.key_down): switch_to_sym_toggle,
-                    ("<alt_l>", KeyEvent.key_hold): nothing,
-                    ("<alt_r>", KeyEvent.key_up): lambda: print("MOD WAS RELEASED NOT EXPECTED"),
-                    ("<alt_r>", KeyEvent.key_down): switch_to_sym_toggle,
-                    ("<alt_r>", KeyEvent.key_hold): nothing,
-                    **get_sym_remaps(switch_to_base),
-                    **standard_remaps,
-                    **capslock_remap}
-
 
 sym_layer_key_pressed = {("<alt_l>", KeyEvent.key_up): switch_to_base,
                          ("<alt_l>", KeyEvent.key_down): lambda: print("MOD WAS PRESSED NOT EXPECTED"),

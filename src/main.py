@@ -4,7 +4,7 @@ import evdev
 from layers import current_layer, modifier_keys
 from utils import forward_event
 
-dev = evdev.InputDevice('/dev/input/event5')
+dev = evdev.InputDevice('/dev/input/event6')
 dev.grab()
 
 held_keys = {}
