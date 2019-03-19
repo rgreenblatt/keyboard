@@ -1,6 +1,6 @@
 import os
 from subprocess import check_output
-from layers import files
+from layers import MyLayerHandler
 from time import sleep
 from utils import alert
 
@@ -9,7 +9,7 @@ if __name__ == "__main__":
     prev_sym_lock_on = False
     while(True):
         capslock_on = check_output("check_caps_on").decode("utf-8").strip() == "on"
-        sym_lock_on = os.path.isfile(files["sym_toggle"])
+        sym_lock_on = os.path.isfile(MyLayerHandler.files["sym_toggle"])
         if capslock_on and not prev_capslock_on:
             alert("CAPS LOCK", time=1)
         if sym_lock_on and not prev_sym_lock_on:

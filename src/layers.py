@@ -9,12 +9,12 @@ from subprocess import Popen, check_output
 from collections import namedtuple
 
 class MyLayerHandler(InputHandler):
+    files = {"sym": "/tmp/sym_activated", "sym_single": "/tmp/sym_single_activated", 
+             "base": "/tmp/base_activated", "sym_toggle": "/tmp/sym_toggle_activated", 
+             "function": "/tmp/function_activated"}
     def __init__(self, debug=False):
         super().__init__()
         self.debug = debug
-        self.files = {"sym": "/tmp/sym_activated", "sym_single": "/tmp/sym_single_activated", 
-                      "base": "/tmp/base_activated", "sym_toggle": "/tmp/sym_toggle_activated", 
-                      "function": "/tmp/function_activated"}
 
         Layer = namedtuple("Layer", "bindings modifiers") 
 
