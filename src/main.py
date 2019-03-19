@@ -1,45 +1,73 @@
-from constants import code_char_map, debug
-from evdev import KeyEvent, ecodes as e
-import evdev
-from layers import current_layer, modifier_keys
-from utils import forward_event
+from utils import alert
+from layers import MyLayerHandler
+from test import get_keyboards
+from sys import exit, argv
+import os
+import time
+from watchdog.observers import Observer
+from watchdog.events import FileSystemEventHandler
+from evdev import InputDevice, ecodes as e
 
-dev = evdev.InputDevice('/dev/input/event6')
-dev.grab()
+path = '/dev/input/'
 
-held_keys = {}
+class KeyboardHandler(FileSystemEventHandler):
+    def __init__(self, debug):
+        self.pid_map = {}
+        self.debug = debug
+        self.last_update = 0
 
-for event in dev.read_loop():
-    if event.type == e.EV_KEY:
-        print(event.code) if debug else None
-        if event.code in code_char_map:
-            if code_char_map[event.code] in held_keys:
-                if (code_char_map[event.code], event.value) in held_keys[code_char_map[event.code]]:
-                    held_keys[code_char_map[event.code]][(code_char_map[event.code], event.value)]()
-                else:
-                    forward_event(event)
-                if event.value == KeyEvent.key_up:
-                    print("removing held") if debug else None
-                    del held_keys[code_char_map[event.code]]
-                print('held key:', code_char_map[event.code], event.value) if debug else None
-            elif (code_char_map[event.code], event.value) in current_layer:
-                print('key:', code_char_map[event.code], event.value) if debug else None
-                changes = current_layer[(code_char_map[event.code], event.value)]()
-                if event.value == KeyEvent.key_down and code_char_map[event.code] not in modifier_keys:
-                    print("added to hold") if debug else None
-                    held_keys[code_char_map[event.code]] = current_layer
-                if changes is not None:
-                    if changes[0] is not None:
-                        current_layer = changes[0]
-                    if changes[1] is not None:
-                         modifier_keys = changes[1]
+    def on_any_event(self, *_):
+        if time.time() - self.last_update > 1:
+            to_remove = []
+            for key, pid in self.pid_map.items():
+                found_pid, status = os.waitpid(pid, os.WNOHANG)
+                if found_pid == pid:
+                    to_remove.append(key)
+            for remove in to_remove:
+                del self.pid_map[remove]
+            self.pid_map.update(self.fork_keyboards(filter(lambda x: x.path not in self.pid_map, 
+                                                      get_keyboards())))
+        self.last_update = time.time()
+
+    def fork_keyboards(self, keyboards):
+        pid_map = {}
+        for keyboard in keyboards:
+            pid = os.fork()
+            if pid == 0:
+                try:
+                    handler = MyLayerHandler(self.debug)
+                    dev = InputDevice(keyboard.path)
+                    dev.grab()
+                    for event in dev.read_loop():
+                        if event.type == e.EV_KEY:
+                            handler.key(event.code, event.value)
+                except Exception as excep:
+                    if type(excep) == OSError and excep.errno == 19:
+                        print("Keyboard disconnected:", excep)
+                        alert("Keyboard disconnected", "")
+                    else:
+                        print("Keyboard error:", excep)
+                        alert("KEYBOARD ERROR", str(excep))
+                finally:
+                    exit()
             else:
-                print('key not found in current bindings') if debug else None
-                forward_event(event)
-                if event.value == KeyEvent.key_down:
-                    print("added to hold") if debug else None
-                    held_keys[code_char_map[event.code]] = current_layer
+                pid_map[keyboard.path] = pid
+        return pid_map
 
-        else:
-            print('key not found in known characters') if debug else None
-            forward_event(event)
+if __name__ == '__main__':
+    debug = len(argv) > 1 and bool(argv[1])
+
+    k_handler = KeyboardHandler(debug)
+    k_handler.on_any_event()
+
+    observer = Observer()
+    observer.schedule(k_handler, path, recursive=False)
+    observer.start()
+
+    try:
+        while True:
+            time.sleep(1)
+    except KeyboardInterrupt:
+        observer.stop()
+
+    observer.join()
