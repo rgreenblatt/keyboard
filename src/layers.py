@@ -9,9 +9,11 @@ from subprocess import Popen, check_output
 from collections import namedtuple
 
 class MyLayerHandler(InputHandler):
+
     files = {"sym": "/tmp/sym_activated", "sym_single": "/tmp/sym_single_activated", 
              "base": "/tmp/base_activated", "sym_toggle": "/tmp/sym_toggle_activated", 
              "function": "/tmp/function_activated"}
+
     def __init__(self, debug=False):
         super().__init__()
         self.debug = debug
@@ -138,6 +140,7 @@ class MyLayerHandler(InputHandler):
                 (other, KeyEvent.key_down): self.switch_to_sym,
                 (other, KeyEvent.key_hold): lambda: print("MOD WAS HELD NOT EXPECTED"),
                 **base_function, 
+                **standard_remaps,
                 **get_sym_remaps(self.switch_to_base)
             },
             modifiers=set(["<alt_l>", "<alt_r>", "<capslock>", "<enter>"])
