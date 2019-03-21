@@ -24,6 +24,7 @@ class KeyboardHandler(FileSystemEventHandler):
         if event.src_path == os.path.join(path_keyboard_info, 'kill'):
             for pid in self.pid_map.values():
                 os.kill(pid, SIGKILL)
+            alert("TURNING OFF MAPPINGS", time=3)
             os.kill(self.parent_pid, SIGKILL)
             exit()
 
@@ -75,6 +76,8 @@ class KeyboardHandler(FileSystemEventHandler):
 if __name__ == '__main__':
 
     debug = len(argv) > 1 and bool(argv[1])
+    
+    alert("Keyboard is mapped")
 
     k_handler = KeyboardHandler(debug, os.getpid())
     k_handler.update()
