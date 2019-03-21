@@ -77,7 +77,7 @@ if __name__ == '__main__':
 
     debug = len(argv) > 1 and bool(argv[1])
     
-    alert("Keyboard is mapped")
+    alert("Keyboard is mapped", time=3)
 
     k_handler = KeyboardHandler(debug, os.getpid())
     k_handler.update()
