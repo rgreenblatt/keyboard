@@ -77,7 +77,7 @@ if __name__ == '__main__':
     debug = len(argv) > 1 and bool(argv[1])
 
     k_handler = KeyboardHandler(debug, os.getpid())
-    # k_handler.update()
+    k_handler.update()
 
     observer = Observer()
     observer.schedule(k_handler, KeyboardHandler.path_input, recursive=False)
