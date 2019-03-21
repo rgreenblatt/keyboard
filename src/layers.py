@@ -1,5 +1,5 @@
 from utils import (nothing, run_background, alert, InputHandler)
-from constants import code_char_map
+from constants import code_char_map, path_keyboard_info
 from evdev import KeyEvent
 from collections import defaultdict
 from pathlib import Path
@@ -10,9 +10,12 @@ from collections import namedtuple
 
 class MyLayerHandler(InputHandler):
 
-    files = {"sym": "/tmp/sym_activated", "sym_single": "/tmp/sym_single_activated", 
-             "base": "/tmp/base_activated", "sym_toggle": "/tmp/sym_toggle_activated", 
-             "function": "/tmp/function_activated"}
+    files = {"sym": "sym_activated", "sym_single": "sym_single_activated", 
+             "base": "base_activated", "sym_toggle": "sym_toggle_activated", 
+             "function": "function_activated"}
+
+    for key in files:
+        files[key] = os.path.join(path_keyboard_info, files[key])
 
     def __init__(self, debug=False):
         super().__init__()
@@ -161,7 +164,8 @@ class MyLayerHandler(InputHandler):
                                                       "p": ["i3-msg", "move", "workspace", "5"],
                                                       ";": ["inc_bright"], "'": ["dec_bright"],
                                                       "z": ["inc_vol", "5"], "x": ["dec_vol", "5"],
-                                                      "c": ["mute_vol"]}, callback),
+                                                      "c": ["mute_vol"], "v": ["start_term"], 
+                                                      "b": ["qutebrowser"]}, callback),
                 **self.generate_remap_python_callable({"h": self.i3_change_focus("h"), 
                                                        "j": self.i3_change_focus("j"),
                                                        "k": self.i3_change_focus("k"),

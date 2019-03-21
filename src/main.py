@@ -7,16 +7,32 @@ import time
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 from evdev import InputDevice, ecodes as e
-
-path = '/dev/input/'
+from constants import path_keyboard_info
+from signal import SIGKILL
 
 class KeyboardHandler(FileSystemEventHandler):
-    def __init__(self, debug):
+
+    path_input = '/dev/input/'
+
+    def __init__(self, debug, parent_pid):
         self.pid_map = {}
         self.debug = debug
         self.last_update = 0
+        self.parent_pid = parent_pid
 
-    def on_any_event(self, *_):
+    def on_created(self, event):
+        if event.src_path == os.path.join(path_keyboard_info, 'kill'):
+            for pid in self.pid_map.values():
+                os.kill(pid, SIGKILL)
+            os.kill(self.parent_pid, SIGKILL)
+            exit()
+
+
+    def on_any_event(self, event):
+        if event.src_path.startswith(self.path_input):
+            self.update()
+
+    def update(self):
         if time.time() - self.last_update > 1:
             to_remove = []
             for key, pid in self.pid_map.items():
@@ -28,6 +44,8 @@ class KeyboardHandler(FileSystemEventHandler):
             self.pid_map.update(self.fork_keyboards(filter(lambda x: x.path not in self.pid_map, 
                                                       get_keyboards())))
         self.last_update = time.time()
+
+
 
     def fork_keyboards(self, keyboards):
         pid_map = {}
@@ -55,13 +73,15 @@ class KeyboardHandler(FileSystemEventHandler):
         return pid_map
 
 if __name__ == '__main__':
+
     debug = len(argv) > 1 and bool(argv[1])
 
-    k_handler = KeyboardHandler(debug)
-    k_handler.on_any_event()
+    k_handler = KeyboardHandler(debug, os.getpid())
+    # k_handler.update()
 
     observer = Observer()
-    observer.schedule(k_handler, path, recursive=False)
+    observer.schedule(k_handler, KeyboardHandler.path_input, recursive=False)
+    observer.schedule(k_handler, path_keyboard_info, recursive=False)
     observer.start()
 
     try:
