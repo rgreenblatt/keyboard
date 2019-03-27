@@ -74,7 +74,6 @@ class KeyboardHandler(FileSystemEventHandler):
         return pid_map
 
 if __name__ == '__main__':
-
     debug = len(argv) > 1 and bool(argv[1])
     
     alert("Keyboard is mapped", time=3)

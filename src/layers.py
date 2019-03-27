@@ -12,7 +12,7 @@ class MyLayerHandler(InputHandler):
 
     files = {"sym": "sym_activated", "sym_single": "sym_single_activated", 
              "base": "base_activated", "sym_toggle": "sym_toggle_activated", 
-             "function": "function_activated"}
+             "function": "function_activated", "keyboard_disabled": "keyboard_disabled_activated"}
 
     for key in files:
         files[key] = os.path.join(path_keyboard_info, files[key])
@@ -21,7 +21,13 @@ class MyLayerHandler(InputHandler):
         super().__init__()
         self.debug = debug
 
-        Layer = namedtuple("Layer", "bindings modifiers") 
+        standard_key_function = self.generic_key_function_maker(False)
+        disable_key_function = self.generic_key_function_maker(True)
+        BaseLayer = namedtuple("BaseLayer", "bindings modifiers key_function") 
+
+        class Layer(BaseLayer):
+            def __new__(self, bindings, modifiers, key_function=standard_key_function):
+                return super(Layer, self).__new__(self, bindings, modifiers, key_function)
 
         on_press_wrapper = lambda c: lambda value: c() if value == KeyEvent.key_down else None
 
@@ -177,11 +183,22 @@ class MyLayerHandler(InputHandler):
                                                     callback)
             }
 
+        self.disable_keyboard_layer = Layer(
+            bindings={
+                ('<esc>', KeyEvent.key_up): nothing,
+                ('<esc>', KeyEvent.key_down): self.switch_to_base,
+                ('<esc>', KeyEvent.key_hold): nothing,
+            },
+            modifiers=set(['<esc>']),
+            key_function=disable_key_function
+        )
+
         self.get_function_layer = lambda key, map_to: Layer(
             bindings={
                 (key, KeyEvent.key_up): lambda : (self.press(map_to, flush=True), self.switch_to_base()),
                 (key, KeyEvent.key_down): lambda: print("FUNCTION MOD WAS PRESSED NOT EXPECTED"),
                 (key, KeyEvent.key_hold): nothing,
+                ('<esc>', KeyEvent.key_down): self.switch_to_disable,
                 **get_function_remaps(self.switch_to_function_key_pressed_maker(key)),
                 **standard_remaps
             },
@@ -202,35 +219,43 @@ class MyLayerHandler(InputHandler):
         self.layer = self.base_layer
         self.held_keys = {}
 
-    def key(self, code, value):
-        if code in code_char_map:
-            key = code_char_map[code]
-            key_value = key, value
-            if key in self.held_keys:
-                print('held key:', key, value) if self.debug else None
-                held_layer = self.held_keys[key]
-                if key_value in held_layer:
-                    held_layer[key_value]()
+    def generic_key_function_maker(self, is_disable):
+        def generic_key_function(code, value):
+            if code in code_char_map:
+                key = code_char_map[code]
+                key_value = key, value
+                if key in self.held_keys:
+                    print('held key:', key, value) if self.debug else None
+                    held_layer = self.held_keys[key]
+                    if not is_disable:
+                        if key_value in held_layer:
+                            held_layer[key_value]()
+                        else:
+                            self.forward_key(code, value)
+                    if value == KeyEvent.key_up:
+                        print("removing held") if self.debug else None
+                        del self.held_keys[key]
+                elif key_value in self.layer.bindings:
+                    print('key:', key, value) if self.debug else None
+                    if value == KeyEvent.key_down and key not in self.layer.modifiers:
+                        print("added to hold") if self.debug else None
+                        self.held_keys[key] = self.layer.bindings
+                    self.layer.bindings[key_value]()
                 else:
-                    self.forward_key(code, value)
-                if value == KeyEvent.key_up:
-                    print("removing held") if self.debug else None
-                    del self.held_keys[key]
-            elif key_value in self.layer.bindings:
-                print('key:', key, value) if self.debug else None
-                if value == KeyEvent.key_down and key not in self.layer.modifiers:
-                    print("added to hold") if self.debug else None
-                    self.held_keys[key] = self.layer.bindings
-                self.layer.bindings[key_value]()
+                    print('key not found in current bindings') if self.debug else None
+                    if value == KeyEvent.key_down:
+                        print("added to hold") if self.debug else None
+                        self.held_keys[key] = self.layer.bindings
+                    if not is_disable:
+                        self.forward_key(code, value)
             else:
-                print('key not found in current bindings') if self.debug else None
-                if value == KeyEvent.key_down:
-                    print("added to hold") if self.debug else None
-                    self.held_keys[key] = self.layer.bindings
-                self.forward_key(code, value)
-        else:
-            print('key not found in known characters') if self.debug else None
-            self.forward_key(code, value)
+                print('key not found in known characters') if self.debug else None
+                if not is_disable:
+                    self.forward_key(code, value)
+        return generic_key_function
+
+    def key(self, code, value):
+        self.layer.key_function(code, value)
 
     def remove_all_files(self):
         for f in self.files.values():
@@ -248,6 +273,12 @@ class MyLayerHandler(InputHandler):
 
     def switch_to_sym_single_maker(self, key, other):
         return lambda: self.switch_to_sym_single(key, other)
+
+    def switch_to_disable(self):
+        self.remove_all_files()
+        self.make_file("keyboard_disabled")
+        print("Disabling keyboard") if self.debug else None
+        self.layer = self.disable_keyboard_layer
 
     def switch_to_sym_single(self, key, other):
         self.remove_all_files()
