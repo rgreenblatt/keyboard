@@ -182,14 +182,14 @@ class MyLayerHandler(InputHandler):
 
         self.base_layer = Layer(
             bindings={
+                **standard_remaps,
                 **function_escape.parent_bindings,
                 **function_enter.parent_bindings,
                 **sym_space.parent_bindings,
                 **control_z.parent_bindings,
                 **control_slash.parent_bindings,
                 **shift_l.parent_bindings,
-                **shift_r.parent_bindings,
-                **standard_remaps
+                **shift_r.parent_bindings
             }, 
             modifiers=function_escape.modifiers.union(function_enter.modifiers).union(sym_space.modifiers).
             union(control_z.modifiers).union(control_slash.modifiers).union(shift_l.modifiers).
