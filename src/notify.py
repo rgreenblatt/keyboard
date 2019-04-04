@@ -1,8 +1,9 @@
 import os
 from subprocess import check_output
-from layers import MyLayerHandler
 from time import sleep
-from utils import alert
+
+from keyboard.layers import MyLayerHandler
+from keyboard.utils import alert
 
 if __name__ == "__main__":
     prev_capslock_on = False

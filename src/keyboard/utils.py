@@ -77,12 +77,22 @@ class InputHandler():
         self.generate_remap_string = RemapString(self)
         self.generate_remap_python_callable = RemapCallable()
         self.generate_remap_control_press = RemapModifierPress(self, self.control_press)
+        self.generate_remap_super_press = RemapModifierPress(self, self.super_press)
         self.generate_remap_shift_press = RemapModifierPress(self, self.shift_press)
 
     def press(self, key, flush=False):
         code = code_char_map.inverse[key]
         self.ui.write(e.EV_KEY, code, KeyEvent.key_down)
         self.ui.write(e.EV_KEY, code, KeyEvent.key_up)
+        if flush:
+            self.ui.syn()
+
+    def super_press(self, key, flush=False):
+        code = code_char_map.inverse[key]
+        self.ui.write(e.EV_KEY, code_char_map.inverse["<super>"], KeyEvent.key_down)
+        self.ui.write(e.EV_KEY, code, KeyEvent.key_down)
+        self.ui.write(e.EV_KEY, code, KeyEvent.key_up)
+        self.ui.write(e.EV_KEY, code_char_map.inverse["<super>"], KeyEvent.key_up)
         if flush:
             self.ui.syn()
 
