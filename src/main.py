@@ -1,14 +1,15 @@
-from utils import alert
-from layers import MyLayerHandler
-from test import get_keyboards
+from keyboard.utils import alert
+from keyboard.layers import MyLayerHandler
+from test_keyboards import get_keyboards
 from sys import exit, argv
 import os
 import time
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 from evdev import InputDevice, ecodes as e
-from constants import path_keyboard_info
+from keyboard.constants import path_keyboard_info
 from signal import SIGKILL
+from distutils.util import strtobool
 
 class KeyboardHandler(FileSystemEventHandler):
 
@@ -46,8 +47,6 @@ class KeyboardHandler(FileSystemEventHandler):
                                                       get_keyboards())))
         self.last_update = time.time()
 
-
-
     def fork_keyboards(self, keyboards):
         pid_map = {}
         for keyboard in keyboards:
@@ -74,7 +73,7 @@ class KeyboardHandler(FileSystemEventHandler):
         return pid_map
 
 if __name__ == '__main__':
-    debug = len(argv) > 1 and bool(argv[1])
+    debug = len(argv) > 1 and bool(strtobool(argv[1]))
     
     alert("Keyboard is mapped", time=3)
 

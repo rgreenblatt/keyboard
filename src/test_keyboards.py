@@ -1,5 +1,5 @@
 import evdev
-from constants import code_char_map
+from keyboard.constants import code_char_map
 
 def is_keyboard(device):
     if device.phys == "py-evdev-uinput":
