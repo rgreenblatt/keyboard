@@ -1,6 +1,5 @@
 from evdev import KeyEvent
 from recordclass import recordclass
-from keyboard.constants import code_char_map
 from keyboard.utils import nothing
 
 class ModToggle():
