@@ -1,4 +1,5 @@
 import evdev
+
 from keyboard.constants import code_char_map
 
 def is_keyboard(device):

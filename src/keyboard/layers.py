@@ -1,14 +1,15 @@
-from keyboard.utils import (nothing, run_background, alert, InputHandler)
-from keyboard.constants import code_char_map, path_keyboard_info
-from evdev import KeyEvent
-from collections import defaultdict
-from pathlib import Path
-import os
 import contextlib
+import os
+from collections import defaultdict, namedtuple
+from pathlib import Path
 from subprocess import Popen, check_output
+
+from evdev import KeyEvent
+
+from keyboard.constants import code_char_map, path_keyboard_info
 from keyboard.mod_tap import ModTap
 from keyboard.mod_toggle import ModToggle
-from collections import namedtuple
+from keyboard.utils import InputHandler, alert, nothing, run_background
 
 class MyLayerHandler(InputHandler):
 

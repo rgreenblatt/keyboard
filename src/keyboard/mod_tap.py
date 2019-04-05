@@ -1,7 +1,9 @@
+import time
+
 from evdev import KeyEvent
 from recordclass import recordclass
+
 from keyboard.constants import code_char_map
-import time
 from keyboard.utils import nothing
 
 class ModTap():
@@ -133,4 +135,3 @@ class ModTap():
             },
             modifiers=self.modifiers
         )
-

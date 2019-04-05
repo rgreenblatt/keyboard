@@ -1,13 +1,16 @@
+import os
+import time
+from signal import SIGKILL
+from sys import argv, exit
+
+from evdev import InputDevice
+from evdev import ecodes as e
+from watchdog.events import FileSystemEventHandler
+from watchdog.observers import Observer
+
 from keyboard.layers import MyLayerHandler
 from keyboard.utils import alert
 from test_keyboards import get_keyboards
-from sys import exit, argv
-import os
-import time
-from watchdog.observers import Observer
-from watchdog.events import FileSystemEventHandler
-from evdev import InputDevice, ecodes as e
-from signal import SIGKILL
 
 if __name__ == '__main__':
     alert("Keyboard is mapped", time=3)

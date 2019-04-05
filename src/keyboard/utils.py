@@ -1,7 +1,10 @@
-from evdev import KeyEvent, UInput, ecodes as e
-from keyboard.constants import code_char_map, upper_lower, control_single
-from subprocess import Popen, DEVNULL
 import os
+from subprocess import DEVNULL, Popen
+
+from evdev import KeyEvent, UInput
+from evdev import ecodes as e
+
+from keyboard.constants import code_char_map, control_single, upper_lower
 
 def nothing(*a):
     pass

@@ -1,6 +1,7 @@
 from collections import defaultdict
-from evdev import ecodes as e
+
 from bidict import bidict
+from evdev import ecodes as e
 
 path_keyboard_info = '/tmp/keyboard_info/'
 

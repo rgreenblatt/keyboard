@@ -1,15 +1,18 @@
-from keyboard.utils import alert
-from keyboard.layers import MyLayerHandler
-from test_keyboards import get_keyboards
-from sys import exit, argv
 import os
 import time
-from watchdog.observers import Observer
-from watchdog.events import FileSystemEventHandler
-from evdev import InputDevice, ecodes as e
-from keyboard.constants import path_keyboard_info
-from signal import SIGKILL
 from distutils.util import strtobool
+from signal import SIGKILL
+from sys import argv, exit
+
+from evdev import InputDevice
+from evdev import ecodes as e
+from watchdog.events import FileSystemEventHandler
+from watchdog.observers import Observer
+
+from keyboard.constants import path_keyboard_info
+from keyboard.layers import MyLayerHandler
+from keyboard.utils import alert
+from test_keyboards import get_keyboards
 
 class KeyboardHandler(FileSystemEventHandler):
 
