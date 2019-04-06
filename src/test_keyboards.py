@@ -11,8 +11,11 @@ def is_keyboard(device):
             return False
     return True
 
+
 def get_keyboards():
-    return filter(is_keyboard, [evdev.InputDevice(path) for path in evdev.list_devices()])
+    return filter(is_keyboard,
+                  [evdev.InputDevice(path) for path in evdev.list_devices()])
+
 
 if __name__ == "__main__":
     for keyboard in get_keyboards():

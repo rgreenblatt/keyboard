@@ -32,7 +32,6 @@ class KeyboardHandler(FileSystemEventHandler):
             os.kill(self.parent_pid, SIGKILL)
             exit()
 
-
     def on_any_event(self, event):
         if event.src_path.startswith(self.path_input):
             self.update()
@@ -46,8 +45,9 @@ class KeyboardHandler(FileSystemEventHandler):
                     to_remove.append(key)
             for remove in to_remove:
                 del self.pid_map[remove]
-            self.pid_map.update(self.fork_keyboards(filter(lambda x: x.path not in self.pid_map, 
-                                                      get_keyboards())))
+            self.pid_map.update(self.fork_keyboards(
+                filter(lambda x: x.path not in self.pid_map, get_keyboards())
+            ))
         self.last_update = time.time()
 
     def fork_keyboards(self, keyboards):
@@ -75,9 +75,10 @@ class KeyboardHandler(FileSystemEventHandler):
                 pid_map[keyboard.path] = pid
         return pid_map
 
+
 if __name__ == '__main__':
     debug = len(argv) > 1 and bool(strtobool(argv[1]))
-    
+
     alert("Keyboard is mapped", time=3)
 
     k_handler = KeyboardHandler(debug, os.getpid())

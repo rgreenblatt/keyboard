@@ -59,7 +59,7 @@ class RemapString(Remaper):
 
     def remap_action(self, t, v):
         if v == KeyEvent.key_down:
-            #get each character, this won't work for modifiers or other special characters
+            #won't work for modifiers or other special characters
             for c in t:
                 if c in upper_lower:
                     self.input_handler.shift_press(upper_lower[c])
@@ -76,12 +76,15 @@ class InputHandler():
     def __init__(self):
         self.ui = UInput()
         self.generate_remap_pass_throughs = RemapPassThroughs(self)
-        self.generate_remap_system_command= RemapSystemCommand()
+        self.generate_remap_system_command = RemapSystemCommand()
         self.generate_remap_string = RemapString(self)
         self.generate_remap_python_callable = RemapCallable()
-        self.generate_remap_control_press = RemapModifierPress(self, self.control_press)
-        self.generate_remap_super_press = RemapModifierPress(self, self.super_press)
-        self.generate_remap_shift_press = RemapModifierPress(self, self.shift_press)
+        self.generate_remap_control_press = \
+            RemapModifierPress(self, self.control_press)
+        self.generate_remap_super_press = \
+            RemapModifierPress(self, self.super_press)
+        self.generate_remap_shift_press = \
+            RemapModifierPress(self, self.shift_press)
 
     def press(self, key, flush=False):
         code = code_char_map.inverse[key]
@@ -92,28 +95,34 @@ class InputHandler():
 
     def super_press(self, key, flush=False):
         code = code_char_map.inverse[key]
-        self.ui.write(e.EV_KEY, code_char_map.inverse["<super>"], KeyEvent.key_down)
+        self.ui.write(e.EV_KEY, code_char_map.inverse["<super>"], 
+                      KeyEvent.key_down)
         self.ui.write(e.EV_KEY, code, KeyEvent.key_down)
         self.ui.write(e.EV_KEY, code, KeyEvent.key_up)
-        self.ui.write(e.EV_KEY, code_char_map.inverse["<super>"], KeyEvent.key_up)
+        self.ui.write(e.EV_KEY, code_char_map.inverse["<super>"], 
+                      KeyEvent.key_up)
         if flush:
             self.ui.syn()
 
     def control_press(self, key, flush=False):
         code = code_char_map.inverse[key]
-        self.ui.write(e.EV_KEY, code_char_map.inverse["<control_l>"], KeyEvent.key_down)
+        self.ui.write(e.EV_KEY, code_char_map.inverse["<control_l>"], 
+                      KeyEvent.key_down)
         self.ui.write(e.EV_KEY, code, KeyEvent.key_down)
         self.ui.write(e.EV_KEY, code, KeyEvent.key_up)
-        self.ui.write(e.EV_KEY, code_char_map.inverse["<control_l>"], KeyEvent.key_up)
+        self.ui.write(e.EV_KEY, code_char_map.inverse["<control_l>"], 
+                      KeyEvent.key_up)
         if flush:
             self.ui.syn()
 
     def shift_press(self, key, flush=False):
         code = code_char_map.inverse[key]
-        self.ui.write(e.EV_KEY, code_char_map.inverse["<shift_l>"], KeyEvent.key_down)
+        self.ui.write(e.EV_KEY, code_char_map.inverse["<shift_l>"], 
+                      KeyEvent.key_down)
         self.ui.write(e.EV_KEY, code, KeyEvent.key_down)
         self.ui.write(e.EV_KEY, code, KeyEvent.key_up)
-        self.ui.write(e.EV_KEY, code_char_map.inverse["<shift_l>"], KeyEvent.key_up)
+        self.ui.write(e.EV_KEY, code_char_map.inverse["<shift_l>"], 
+                      KeyEvent.key_up)
         if flush:
             self.ui.syn()
 
@@ -122,7 +131,8 @@ class InputHandler():
         self.ui.syn()
 
 def alert(title, text="", time=10):
-    os.system("notify-send -u critical -t {} '{}' '{}'".format(time * 1000, title, text))
+    os.system("notify-send -u critical -t {} '{}' '{}'".format(time * 1000, 
+                                                               title, text))
 
 def run_background(command):
     try:
