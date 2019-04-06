@@ -142,21 +142,18 @@ class MyLayerHandler(InputHandler):
             print("Switching to sym toggle") if self.debug else None
 
         time_no_tap = 0.2
-        catch_final_if_no_tap = True
 
         function_escape = ModTap(self, "<capslock>", "<esc>", get_function_bindings, standard_bindings,
                                  self.switch_to_base, base_switch_to_function,
-                                 set(['<esc>']), Layer, time_no_tap,
-                                 catch_final_if_no_tap, name="esc function layer")
+                                 set(['<esc>']), Layer, time_no_tap, name="esc function layer")
 
         function_enter = ModTap(self, "<enter>", "<enter>", get_function_bindings, standard_bindings,
                                 self.switch_to_base, base_switch_to_function,
-                                set(['<esc>']), Layer, time_no_tap,
-                                catch_final_if_no_tap, name="enter function layer")
+                                set(['<esc>']), Layer, time_no_tap, name="enter function layer")
 
         sym_space = ModTap(self, "<space>", "<space>", get_sym_bindings, standard_bindings,
-                           self.switch_to_base, base_switch_to_sym, set(), Layer,
-                           time_no_tap, catch_final_if_no_tap, name="space sym layer")
+                           self.switch_to_base, base_switch_to_sym, set(), Layer, time_no_tap, 
+                           name="space sym layer")
 
         sym_space_toggle = ModToggle(self, "<space>", ["<shift_l>", "<shift_r>"], sym_bindings, {},
                                      standard_bindings, self.switch_to_base, base_switch_to_sym_toggle, set(),
@@ -164,33 +161,32 @@ class MyLayerHandler(InputHandler):
 
         control_z = ModTap(self, "z", "z", get_control_bindings, {},
                            self.switch_to_base, base_switch_to_control, set(), Layer,
-                           time_no_tap, catch_final_if_no_tap, name="z control layer")
+                           time_no_tap, name="z control layer")
 
         control_slash = ModTap(self, "/", "/", get_control_bindings, {},
                                self.switch_to_base, base_switch_to_control, set(), Layer,
-                               time_no_tap, catch_final_if_no_tap, name="/ control layer")
+                               time_no_tap, name="/ control layer")
 
         super_x = ModTap(self, "x", "x", get_super_bindings, {},
                          self.switch_to_base, base_switch_to_super, set(), Layer,
-                         time_no_tap, catch_final_if_no_tap, name="x super layer")
+                         time_no_tap, name="x super layer")
 
         super_dot = ModTap(self, ".", ".", get_super_bindings, {},
                            self.switch_to_base, base_switch_to_super, set(), Layer,
-                           time_no_tap, catch_final_if_no_tap, name=". super layer")
+                           time_no_tap, name=". super layer")
 
         time_no_tap_shift = 0.0
-        catch_final_if_no_tap_shift = True
 
         get_shift_bindings = make_wrapper({**shift_bindings, **standard_bindings,
                                            **sym_space_toggle.parent_bindings})
 
         shift_l = ModTap(self, "<shift_l>", "<shift_l>", get_shift_bindings, {},
                          self.switch_to_base, base_switch_to_shift, sym_space_toggle.parent_modifiers, Layer,
-                         time_no_tap_shift, catch_final_if_no_tap_shift, name="left shift layer")
+                         time_no_tap_shift, name="left shift layer")
 
         shift_r = ModTap(self, "<shift_r>", "<shift_r>", get_shift_bindings, {},
                          self.switch_to_base, base_switch_to_shift, sym_space_toggle.parent_modifiers, Layer,
-                         time_no_tap_shift, catch_final_if_no_tap_shift, name="right shift layer")
+                         time_no_tap_shift, name="right shift layer")
 
         self.base_layer = Layer(
             bindings={
