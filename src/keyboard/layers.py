@@ -61,7 +61,8 @@ class MyLayerHandler(InputHandler):
                      "q": "q", "w": "w", "e": "e", "r": "r", "t": "t", "y": "y", "u": "u", "i": "i",
                      "o": "o", "p": "p", "a": "a", "s": "s", "d": "d", "f": "f", "g": "g", "h": "h",
                      "j": "j", "k": "k", "l": "l", ";": ";", "'": "'", "z": "z", "x": "x", "c": "c",
-                     "v": "v", "b": "b", "n": "n", "m": "m", ",": ",", ".": ".", "/": "/"}
+                     "v": "v", "b": "b", "n": "n", "m": "m", ",": ",", ".": ".", "/": "/", 
+                     **standard_bindings}
 
         shift_bindings = self.generate_remap_shift_press(self_dict, nothing)
         control_bindings = self.generate_remap_control_press(
@@ -106,10 +107,8 @@ class MyLayerHandler(InputHandler):
 
         get_function_bindings = make_wrapper(function_bindings)
         get_sym_bindings = make_wrapper(sym_bindings)
-        get_control_bindings = make_wrapper(
-            {**control_bindings, **standard_bindings})
-        get_super_bindings = make_wrapper(
-            {**super_bindings, **standard_bindings})
+        get_control_bindings = make_wrapper(control_bindings)
+        get_super_bindings = make_wrapper(super_bindings)
 
         def base_switch_to_sym():
             self.remove_all_files()
@@ -177,7 +176,7 @@ class MyLayerHandler(InputHandler):
 
         time_no_tap_shift = 0.0
 
-        get_shift_bindings = make_wrapper({**shift_bindings, **standard_bindings,
+        get_shift_bindings = make_wrapper({**shift_bindings, 
                                            **sym_space_toggle.parent_bindings})
 
         shift_l = ModTap(self, "<shift_l>", "<shift_l>", get_shift_bindings, {},
