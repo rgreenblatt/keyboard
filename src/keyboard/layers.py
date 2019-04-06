@@ -19,7 +19,7 @@ class MyLayerHandler(InputHandler):
         "function": "function_activated",
         "keyboard_disabled": "keyboard_disabled_activated",
         "control": "control_activated", "shift": "shift_activated",
-        "super": "super_activated"
+        "super": "super_activated", "alt": "alt_activated"
     }
 
     for key in files:
@@ -64,19 +64,21 @@ class MyLayerHandler(InputHandler):
             return get_wrapped_bindings
 
         self_dict = {"<space>": "<space>", "<tab>": "<tab>",
-                     "<enter>": "<enter>", "<esc>": "<esc>", "q": "q",
-                     "w": "w", "e": "e", "r": "r", "t": "t", "y": "y",
-                     "u": "u", "i": "i", "o": "o", "p": "p", "a": "a",
-                     "s": "s", "d": "d", "f": "f", "g": "g", "h": "h",
-                     "j": "j", "k": "k", "l": "l", ";": ";", "'": "'",
-                     "z": "z", "x": "x", "c": "c", "v": "v", "b": "b",
-                     "n": "n", "m": "m", ",": ",", ".": ".", "/": "/",
+                     "<enter>": "<enter>", "<esc>": "<esc>", "`": "`",
+                     "q": "q", "w": "w", "e": "e", "r": "r", "t": "t", 
+                     "y": "y", "u": "u", "i": "i", "o": "o", "p": "p", 
+                     "a": "a", "s": "s", "d": "d", "f": "f", "g": "g", 
+                     "h": "h", "j": "j", "k": "k", "l": "l", ";": ";", 
+                     "'": "'", "z": "z", "x": "x", "c": "c", "v": "v", 
+                     "b": "b", "n": "n", "m": "m", ",": ",", ".": ".", 
+                     "/": "/",
                      **standard_dict}
 
         shift_bindings = self.generate_remap_shift_press(self_dict, nothing)
         control_bindings = self.generate_remap_control_press(
             self_dict, nothing)
         super_bindings = self.generate_remap_super_press(self_dict, nothing)
+        alt_bindings = self.generate_remap_alt_press(self_dict, nothing)
 
         sym_bindings = self.generate_remap_pass_throughs(
             {"<capslock>": "<esc>", "q": "1", "w": "2", "e": "3",
@@ -123,6 +125,7 @@ class MyLayerHandler(InputHandler):
         get_sym_bindings = make_wrapper(sym_bindings)
         get_control_bindings = make_wrapper(control_bindings)
         get_super_bindings = make_wrapper(super_bindings)
+        get_alt_bindings = make_wrapper(alt_bindings)
 
         def base_switch_to_sym():
             self.remove_all_files()
@@ -152,6 +155,11 @@ class MyLayerHandler(InputHandler):
         def base_switch_to_super():
             self.remove_all_files()
             self.make_file("super")
+            print("Switching to sym toggle") if self.debug else None
+
+        def base_switch_to_alt():
+            self.remove_all_files()
+            self.make_file("alt")
             print("Switching to sym toggle") if self.debug else None
 
         time_no_tap = 0.2
@@ -204,23 +212,34 @@ class MyLayerHandler(InputHandler):
             name=". super layer"
         )
 
-        time_no_tap_shift = 0.0
-
         get_shift_bindings = make_wrapper({**shift_bindings,
                                            **sym_space_toggle.parent_bindings})
 
         shift_l = ModTap(
-            self, "<shift_l>", "<shift_l>", get_shift_bindings, {},
+            self, "<shift_l>", "-", get_shift_bindings, {},
             self.switch_to_base, base_switch_to_shift,
-            sym_space_toggle.parent_modifiers, Layer, time_no_tap_shift,
+            sym_space_toggle.parent_modifiers, Layer, time_no_tap,
             name="left shift layer"
         )
 
         shift_r = ModTap(
-            self, "<shift_r>", "<shift_r>", get_shift_bindings, {},
+            self, "<shift_r>", "+", get_shift_bindings, {},
             self.switch_to_base, base_switch_to_shift,
-            sym_space_toggle.parent_modifiers, Layer, time_no_tap_shift,
+            sym_space_toggle.parent_modifiers, Layer, time_no_tap,
             name="right shift layer")
+
+        alt_l = ModTap(
+            self, "<alt_l>", "[", get_alt_bindings, {},
+            self.switch_to_base, base_switch_to_alt,
+            sym_space_toggle.parent_modifiers, Layer, time_no_tap,
+            name="left alt layer"
+        )
+
+        alt_r = ModTap(
+            self, "<alt_r>", "]", get_alt_bindings, {},
+            self.switch_to_base, base_switch_to_alt,
+            sym_space_toggle.parent_modifiers, Layer, time_no_tap,
+            name="right alt layer")
 
         self.base_layer = Layer(
             bindings={
@@ -233,13 +252,16 @@ class MyLayerHandler(InputHandler):
                 **super_x.parent_bindings,
                 **super_dot.parent_bindings,
                 **shift_l.parent_bindings,
-                **shift_r.parent_bindings
+                **shift_r.parent_bindings,
+                **alt_l.parent_bindings,
+                **alt_r.parent_bindings
             },
             modifiers=function_escape.modifiers.union(function_enter.modifiers).
             union(sym_space.modifiers).union(control_z.modifiers).
             union(control_slash.modifiers).union(super_x.modifiers).
             union(super_dot.modifiers).union(shift_l.modifiers).
-            union(shift_r.modifiers)
+            union(shift_r.modifiers).union(alt_l.modifiers).
+            union(alt_r.modifiers)
         )
 
         capslock_remap = self.generate_remap_pass_throughs(

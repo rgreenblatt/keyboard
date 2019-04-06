@@ -4,7 +4,7 @@ from collections import OrderedDict
 from evdev import KeyEvent
 from recordclass import recordclass
 
-from keyboard.constants import code_char_map
+from keyboard.constants import code_char_map, upper_lower
 from keyboard.utils import nothing
 
 class ModTap():
@@ -66,7 +66,11 @@ class ModTap():
         if self.mod_key_events.no_keypress_on_finish:
             ModTap.send_buffered_keys(self.currently_pressed_no_hold)
         else:
-            self.handler.press(self.map_tap, flush=True)
+            if self.map_tap in upper_lower:
+                self.handler.shift_press(upper_lower[self.map_tap], flush=True)
+            else:
+                self.handler.press(self.map_tap, flush=True)
+
             ModTap.send_buffered_keys_parent(self.currently_pressed_no_hold,
                                              self.handler)
 

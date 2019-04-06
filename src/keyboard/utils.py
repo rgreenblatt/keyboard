@@ -83,6 +83,8 @@ class InputHandler():
             RemapModifierPress(self, self.control_press)
         self.generate_remap_super_press = \
             RemapModifierPress(self, self.super_press)
+        self.generate_remap_alt_press = \
+            RemapModifierPress(self, self.alt_press)
         self.generate_remap_shift_press = \
             RemapModifierPress(self, self.shift_press)
 
@@ -90,6 +92,17 @@ class InputHandler():
         code = code_char_map.inverse[key]
         self.ui.write(e.EV_KEY, code, KeyEvent.key_down)
         self.ui.write(e.EV_KEY, code, KeyEvent.key_up)
+        if flush:
+            self.ui.syn()
+
+    def alt_press(self, key, flush=False):
+        code = code_char_map.inverse[key]
+        self.ui.write(e.EV_KEY, code_char_map.inverse["<alt_l>"], 
+                      KeyEvent.key_down)
+        self.ui.write(e.EV_KEY, code, KeyEvent.key_down)
+        self.ui.write(e.EV_KEY, code, KeyEvent.key_up)
+        self.ui.write(e.EV_KEY, code_char_map.inverse["<alt_l>"], 
+                      KeyEvent.key_up)
         if flush:
             self.ui.syn()
 
