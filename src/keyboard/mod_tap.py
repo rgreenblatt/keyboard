@@ -49,6 +49,7 @@ class ModTap():
     @staticmethod
     def send_buffered_keys_parent(currently_pressed_no_hold, handler):
         for key in currently_pressed_no_hold:
+            handler.remove_held_key(key)
             handler.key(code_char_map.inverse[key], KeyEvent.key_down)
         currently_pressed_no_hold.clear()
 
@@ -56,6 +57,8 @@ class ModTap():
         t_delta = time.time() - self.t_enter
 
         self.mod_key_events.no_keypress_on_finish |= t_delta > self.time_no_tap
+
+        self.switch_to_parent()
 
         if self.mod_key_events.no_keypress_on_finish:
             ModTap.send_buffered_keys(self.currently_pressed_no_hold)
@@ -66,8 +69,6 @@ class ModTap():
         self.mod_key_events.layer_exited = True
 
         self.reset()
-
-        self.switch_to_parent()
 
     def mod_key_hold(self):
         self.mod_key_events.no_keypress_on_finish = True

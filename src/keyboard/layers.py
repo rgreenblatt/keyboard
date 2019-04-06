@@ -36,9 +36,9 @@ class MyLayerHandler(InputHandler):
             def __new__(self, bindings, modifiers, key_function=standard_key_function):
                 return super(Layer, self).__new__(self, bindings, modifiers, key_function)
 
-        standard_bindings = {**self.generate_remap_pass_throughs({"[": "<backspace>"}),
-                             **self.generate_remap_pass_throughs({"<backspace>": "<capslock>"}),
-                             **self.generate_remap_pass_throughs({"<capslock>": "<esc>"})}
+        standard_dict = {"[": "<backspace>", "<backspace>": "<capslock>", "<capslock>": "<esc>"}
+
+        standard_bindings = self.generate_remap_pass_throughs(standard_dict)
 
         def make_wrapper(bindings):
             def get_wrapped_bindings(create_key_up, create_key_down, create_key_hold):
@@ -62,7 +62,7 @@ class MyLayerHandler(InputHandler):
                      "o": "o", "p": "p", "a": "a", "s": "s", "d": "d", "f": "f", "g": "g", "h": "h",
                      "j": "j", "k": "k", "l": "l", ";": ";", "'": "'", "z": "z", "x": "x", "c": "c",
                      "v": "v", "b": "b", "n": "n", "m": "m", ",": ",", ".": ".", "/": "/", 
-                     **standard_bindings}
+                     **standard_dict}
 
         shift_bindings = self.generate_remap_shift_press(self_dict, nothing)
         control_bindings = self.generate_remap_control_press(
