@@ -24,6 +24,7 @@ def make_mod_map(mod_sym):
 
 control_maps = make_mod_map("c")
 alt_maps = make_mod_map("a")
+control_alt_maps = make_mod_map("c-a")
 
 code_char_map = bidict({1:   "<esc>",
                         2:   "1",

@@ -4,7 +4,8 @@ from subprocess import DEVNULL, Popen
 from evdev import KeyEvent, UInput
 from evdev import ecodes as e
 
-from keyboard.constants import code_char_map, shift_maps, control_maps, alt_maps
+from keyboard.constants import (code_char_map, shift_maps, control_maps, 
+                                alt_maps, control_alt_maps)
 
 def nothing(*a):
     pass
@@ -73,10 +74,12 @@ class InputHandler():
         self.shift_press = self.make_mod_press('<shift_l>')
         self.control_press = self.make_mod_press('<control_l>')
         self.alt_press = self.make_mod_press('<control_l>')
+        self.control_alt_press = self.make_mod_press(['<control_l>', '<alt_l>'])
 
         self.mod_combos = [(shift_maps, self.shift_press),
                            (control_maps, self.control_press),
-                            (alt_maps, self.alt_press)]
+                           (alt_maps, self.alt_press),
+                           (control_alt_maps, self.control_alt_press)]
 
 
     def send_event(self, values, press_type, flush=False):

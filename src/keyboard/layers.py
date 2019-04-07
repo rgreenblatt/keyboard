@@ -82,13 +82,12 @@ class MyLayerHandler(InputHandler):
             {"<capslock>": "<esc>", "q": "1", "w": "2", "e": "3",
              "r": "4", "t": "5", "y": "6", "u": "7", "i": "8", "o": "9",
              "p": "0", "a": "!", "s": "@", "d": "#", "f": "$", "g": "%",
-             "h": "^", "j": "&", "k": "*", "l": "(", ";": ")", "'": "|",
-             "z": "~", "x": "_", "c": "`", "v": "+", "b": "=", "n": "\\",
-             "m": "[", ",": "]", ".": "{", "/": "}",
-             "<control_r>": "`", "<control_l>": "`"},
+             "h": "^", "j": "&", "k": "*", "l": "(", ";": ")", "'": "<c-a-p>",
+             "z": "~", "x": "`", "c": "\\", "v": "|", "b": "<c-a-b>", 
+             "n": "<c-a-n>", "m": "<c-a-a>", ",": "<c-a-f>", ".": "<c-a-g>", 
+             "/": "<c-a-h>"},
             nothing
         )
-
         function_bindings = {
             ('<esc>', KeyEvent.key_down): self.switch_to_disable,
             **self.generate_remap_system_command(
