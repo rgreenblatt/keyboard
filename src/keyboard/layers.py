@@ -165,6 +165,10 @@ class MyLayerHandler(InputHandler):
         ModMap = namedtuple('ModMap', 
                             'map_tap map_hold name extra_maps extra_modifiers')
 
+        shift_to_shift = self.generate_remap_pass_throughs({
+            '<shift_l>': '<shift_l>', '<shift_r>': '<shift_r>'
+        })
+
         mod_maps = [
             ('<shift_l>', ModMap(map_tap='-', map_hold='<shift_l>',
                                 name='shift',
@@ -177,10 +181,10 @@ class MyLayerHandler(InputHandler):
                                 extra_modifiers=sym_space_toggle.
                                 parent_modifiers)),
             ('<alt_l>',   ModMap(map_tap='[', map_hold='<super>',
-                                name='alt', extra_maps={},
+                                name='alt', extra_maps=shift_to_shift,
                                 extra_modifiers=set())),
             ('<alt_r>',   ModMap(map_tap=']', map_hold='<super>',
-                                name='alt', extra_maps={},
+                                name='alt', extra_maps=shift_to_shift,
                                 extra_modifiers=set())),
             ('z',         ModMap(map_tap='z', map_hold='<control_l>',
                                 name='control', extra_maps={},
