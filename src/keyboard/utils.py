@@ -4,7 +4,7 @@ from subprocess import DEVNULL, Popen
 from evdev import KeyEvent, UInput
 from evdev import ecodes as e
 
-from keyboard.constants import code_char_map, control_single, upper_lower
+from keyboard.constants import code_char_map, shift_maps, control_maps, alt_maps
 
 def nothing(*a):
     pass
@@ -29,15 +29,7 @@ class RemapPassThroughs(Remaper):
         self.input_handler = input_handler
 
     def remap_action(self, t, v):
-        if t in upper_lower:
-            if v != KeyEvent.key_up:
-                self.input_handler.shift_press(upper_lower[t])
-        elif t in control_single:
-            if v != KeyEvent.key_up:
-                self.input_handler.control_press(control_single[t])
-        else:
-            self.input_handler.ui.write(e.EV_KEY, code_char_map.inverse[t], v)
-        self.input_handler.ui.syn()
+        self.input_handler.send_event(t, v, True)
 
 class RemapSystemCommand(Remaper):
     def remap_action(self, t, v):
@@ -61,10 +53,7 @@ class RemapString(Remaper):
         if v == KeyEvent.key_down:
             #won't work for modifiers or other special characters
             for c in t:
-                if c in upper_lower:
-                    self.input_handler.shift_press(upper_lower[c])
-                else:
-                    self.input_handler.press(c)
+                self.input_handler.press(c)
             self.input_handler.ui.syn()
 
 class RemapCallable(Remaper):
@@ -79,69 +68,53 @@ class InputHandler():
         self.generate_remap_system_command = RemapSystemCommand()
         self.generate_remap_string = RemapString(self)
         self.generate_remap_python_callable = RemapCallable()
-        self.generate_remap_control_press = \
-            RemapModifierPress(self, self.control_press)
-        self.generate_remap_super_press = \
-            RemapModifierPress(self, self.super_press)
-        self.generate_remap_alt_press = \
-            RemapModifierPress(self, self.alt_press)
-        self.generate_remap_shift_press = \
-            RemapModifierPress(self, self.shift_press)
+        self.make_generate_remap_mod_press = \
+            lambda mod: RemapModifierPress(self, self.make_mod_press(mod))
+        self.shift_press = self.make_mod_press('<shift_l>')
+        self.control_press = self.make_mod_press('<control_l>')
+        self.alt_press = self.make_mod_press('<control_l>')
+
+        self.mod_combos = [(shift_maps, self.shift_press),
+                           (control_maps, self.control_press),
+                            (alt_maps, self.alt_press)]
+
+
+    def send_event(self, values, press_type, flush=False):
+        if isinstance(values, str):
+            self.send_key(values, press_type)
+        else:
+            for key in values:
+                self.send_key(key, press_type)
+        if flush:
+            self.ui.syn()
+
+    def write(self, key, press_type, flush=False):
+        self.write_raw(code_char_map.inverse[key], press_type, flush)
+
+    def write_raw(self, code, press_type, flush=False):
+        self.ui.write(e.EV_KEY, code, press_type)
+        if flush:
+            self.ui.syn()
+
+    def send_key(self, key, press_type, flush=False):
+        for mod_map, mod_press in self.mod_combos:
+            if key in mod_map:
+                if press_type != KeyEvent.key_up:
+                    mod_press(mod_map[key], flush)
+                return
+        self.write(key, press_type, flush)
 
     def press(self, key, flush=False):
-        code = code_char_map.inverse[key]
-        self.ui.write(e.EV_KEY, code, KeyEvent.key_down)
-        self.ui.write(e.EV_KEY, code, KeyEvent.key_up)
-        if flush:
-            self.ui.syn()
+        self.send_event(key, KeyEvent.key_down)
+        self.send_event(key, KeyEvent.key_up, flush)
 
-    def alt_press(self, key, flush=False):
-        code = code_char_map.inverse[key]
-        self.ui.write(e.EV_KEY, code_char_map.inverse["<alt_l>"], 
-                      KeyEvent.key_down)
-        self.ui.write(e.EV_KEY, code, KeyEvent.key_down)
-        self.ui.write(e.EV_KEY, code, KeyEvent.key_up)
-        self.ui.write(e.EV_KEY, code_char_map.inverse["<alt_l>"], 
-                      KeyEvent.key_up)
-        if flush:
-            self.ui.syn()
-
-    def super_press(self, key, flush=False):
-        code = code_char_map.inverse[key]
-        self.ui.write(e.EV_KEY, code_char_map.inverse["<super>"], 
-                      KeyEvent.key_down)
-        self.ui.write(e.EV_KEY, code, KeyEvent.key_down)
-        self.ui.write(e.EV_KEY, code, KeyEvent.key_up)
-        self.ui.write(e.EV_KEY, code_char_map.inverse["<super>"], 
-                      KeyEvent.key_up)
-        if flush:
-            self.ui.syn()
-
-    def control_press(self, key, flush=False):
-        code = code_char_map.inverse[key]
-        self.ui.write(e.EV_KEY, code_char_map.inverse["<control_l>"], 
-                      KeyEvent.key_down)
-        self.ui.write(e.EV_KEY, code, KeyEvent.key_down)
-        self.ui.write(e.EV_KEY, code, KeyEvent.key_up)
-        self.ui.write(e.EV_KEY, code_char_map.inverse["<control_l>"], 
-                      KeyEvent.key_up)
-        if flush:
-            self.ui.syn()
-
-    def shift_press(self, key, flush=False):
-        code = code_char_map.inverse[key]
-        self.ui.write(e.EV_KEY, code_char_map.inverse["<shift_l>"], 
-                      KeyEvent.key_down)
-        self.ui.write(e.EV_KEY, code, KeyEvent.key_down)
-        self.ui.write(e.EV_KEY, code, KeyEvent.key_up)
-        self.ui.write(e.EV_KEY, code_char_map.inverse["<shift_l>"], 
-                      KeyEvent.key_up)
-        if flush:
-            self.ui.syn()
-
-    def forward_key(self, code, value):
-        self.ui.write(e.EV_KEY, code, value)
-        self.ui.syn()
+    def make_mod_press(self, mod):
+        def mod_press(key, flush=False):
+            self.send_event(mod, KeyEvent.key_down)
+            self.press(key)
+            self.send_event(mod, KeyEvent.key_up, flush)
+        
+        return mod_press
 
 def alert(title, text="", time=10):
     os.system("notify-send -u critical -t {} '{}' '{}'".format(time * 1000, 

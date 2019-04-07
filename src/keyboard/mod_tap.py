@@ -4,8 +4,8 @@ from collections import OrderedDict
 from evdev import KeyEvent
 from recordclass import recordclass
 
-from keyboard.constants import code_char_map, upper_lower
 from keyboard.utils import nothing
+from keyboard.constants import code_char_map
 
 class ModTap():
 
@@ -66,10 +66,7 @@ class ModTap():
         if self.mod_key_events.no_keypress_on_finish:
             ModTap.send_buffered_keys(self.currently_pressed_no_hold)
         else:
-            if self.map_tap in upper_lower:
-                self.handler.shift_press(upper_lower[self.map_tap], flush=True)
-            else:
-                self.handler.press(self.map_tap, flush=True)
+            self.handler.press(self.map_tap, flush=True)
 
             ModTap.send_buffered_keys_parent(self.currently_pressed_no_hold,
                                              self.handler)
@@ -125,7 +122,7 @@ class ModTap():
 
             if mod_key_events.layer_exited and not \
                     mod_key_events.no_keypress_on_finish:
-                self.handler.key(code_char_map.inverse(key), KeyEvent.key_hold)
+                self.handler.key(code_char_map.inverse[key], KeyEvent.key_hold)
             else:
                 ModTap.send_buffered_keys(currently_pressed_no_hold)
                 map_to_callable()
@@ -135,6 +132,7 @@ class ModTap():
 
     def switch_to_self(self):
         self.t_enter = time.time()
+        # self.additional_mods_and_press = additional_mods_and_press
         self.base_switch_to_self()
         print("Switching to", self.name, "using", self.key) \
             if self.handler.debug else None
@@ -145,7 +143,7 @@ class ModTap():
                 **self.no_callback_remaps,
                 (self.key, KeyEvent.key_up): self.mod_key_up,
                 (self.key, KeyEvent.key_down):
-                lambda: print(name, "MOD WAS PRESSED NOT EXPECTED"),
+                lambda: print(self.name, "MOD WAS PRESSED NOT EXPECTED"),
                 (self.key, KeyEvent.key_hold): self.mod_key_hold,
             },
             modifiers=self.modifiers

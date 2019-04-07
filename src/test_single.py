@@ -11,10 +11,11 @@ from watchdog.observers import Observer
 from keyboard.layers import MyLayerHandler
 from keyboard.utils import alert
 from test_keyboards import get_keyboards
+from distutils.util import strtobool
 
 if __name__ == '__main__':
     alert("Keyboard is mapped", time=3)
-    debug = len(argv) > 1 and bool(argv[1])
+    debug = len(argv) > 1 and bool(strtobool(argv[1]))
     handler = MyLayerHandler(debug)
     dev = InputDevice("/dev/input/event4")
     dev.grab()
