@@ -363,12 +363,12 @@ class MyLayerHandler(InputHandler):
                 self.press(direction, flush=True)
             else:
                 if direction == "h":
-                    full_direction_name = "right"
+                    full_direction_name = "left"
                 elif direction == "j":
                     full_direction_name = "down"
                 elif direction == "k":
                     full_direction_name = "up"
                 elif direction == "l":
-                    full_direction_name = "left"
+                    full_direction_name = "right"
                 run_background(["i3-msg", "focus", full_direction_name])
         return change
