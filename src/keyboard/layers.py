@@ -64,17 +64,16 @@ class MyLayerHandler(InputHandler):
                 return wrapped_bindings
             return get_wrapped_bindings
 
-
         self_dict = {"<space>": "<space>", "<tab>": "<tab>",
                      "<enter>": "<enter>", "<esc>": "<esc>",
                      "<shift_l>": "-", "<shift_r>": "=", "<alt_l>": "[",
                      "<alt_r>": "]",
-                     "q": "q", "w": "w", "e": "e", "r": "r", "t": "t", 
-                     "y": "y", "u": "u", "i": "i", "o": "o", "p": "p", 
-                     "a": "a", "s": "s", "d": "d", "f": "f", "g": "g", 
-                     "h": "h", "j": "j", "k": "k", "l": "l", ";": ";", 
-                     "'": "'", "z": "z", "x": "x", "c": "c", "v": "v", 
-                     "b": "b", "n": "n", "m": "m", ",": ",", ".": ".", 
+                     "q": "q", "w": "w", "e": "e", "r": "r", "t": "t",
+                     "y": "y", "u": "u", "i": "i", "o": "o", "p": "p",
+                     "a": "a", "s": "s", "d": "d", "f": "f", "g": "g",
+                     "h": "h", "j": "j", "k": "k", "l": "l", ";": ";",
+                     "'": "'", "z": "z", "x": "x", "c": "c", "v": "v",
+                     "b": "b", "n": "n", "m": "m", ",": ",", ".": ".",
                      "/": "/", "`": "`",
                      **standard_dict}
 
@@ -83,8 +82,8 @@ class MyLayerHandler(InputHandler):
              "r": "4", "t": "5", "y": "6", "u": "7", "i": "8", "o": "9",
              "p": "0", "a": "!", "s": "@", "d": "#", "f": "$", "g": "%",
              "h": "^", "j": "&", "k": "*", "l": "(", ";": ")", "'": "<c-a-p>",
-             "z": "~", "x": "`", "c": "\\", "v": "|", "b": "<c-a-b>", 
-             "n": "<c-a-n>", "m": "<c-a-a>", ",": "<c-a-f>", ".": "<c-a-g>", 
+             "z": "~", "x": "`", "c": "\\", "v": "|", "b": "<c-a-b>",
+             "n": "<c-a-n>", "m": "<c-a-a>", ",": "<c-a-f>", ".": "<c-a-g>",
              "/": "<c-a-h>"},
             nothing
         )
@@ -162,7 +161,7 @@ class MyLayerHandler(InputHandler):
             set(), Layer, name="space sym layer"
         )
 
-        ModMap = namedtuple('ModMap', 
+        ModMap = namedtuple('ModMap',
                             'map_tap map_hold name extra_maps extra_modifiers')
 
         shift_to_shift = self.generate_remap_pass_throughs({
@@ -171,33 +170,33 @@ class MyLayerHandler(InputHandler):
 
         mod_maps = [
             ('<shift_l>', ModMap(map_tap='-', map_hold='<shift_l>',
-                                name='shift',
-                                extra_maps=sym_space_toggle.parent_bindings,
-                                extra_modifiers=sym_space_toggle.
-                                parent_modifiers)),
+                                 name='shift',
+                                 extra_maps=sym_space_toggle.parent_bindings,
+                                 extra_modifiers=sym_space_toggle.
+                                 parent_modifiers)),
             ('<shift_r>', ModMap(map_tap='=', map_hold='<shift_r>',
-                                name='shift',
-                                extra_maps=sym_space_toggle.parent_bindings,
-                                extra_modifiers=sym_space_toggle.
-                                parent_modifiers)),
+                                 name='shift',
+                                 extra_maps=sym_space_toggle.parent_bindings,
+                                 extra_modifiers=sym_space_toggle.
+                                 parent_modifiers)),
             ('<alt_l>',   ModMap(map_tap='[', map_hold='<super>',
-                                name='alt', extra_maps=shift_to_shift,
-                                extra_modifiers=set())),
+                                 name='alt', extra_maps=shift_to_shift,
+                                 extra_modifiers=set())),
             ('<alt_r>',   ModMap(map_tap=']', map_hold='<super>',
-                                name='alt', extra_maps=shift_to_shift,
-                                extra_modifiers=set())),
+                                 name='alt', extra_maps=shift_to_shift,
+                                 extra_modifiers=set())),
             ('z',         ModMap(map_tap='z', map_hold='<control_l>',
-                                name='control', extra_maps={},
-                                extra_modifiers=set())),
+                                 name='control', extra_maps={},
+                                 extra_modifiers=set())),
             ('/',         ModMap(map_tap='/', map_hold='<control_r>',
-                                name='control', extra_maps={},
-                                extra_modifiers=set())),
+                                 name='control', extra_maps={},
+                                 extra_modifiers=set())),
             ('x',         ModMap(map_tap='x', map_hold='<alt_l>',
-                                name='alt_l', extra_maps={},
-                                extra_modifiers=set())),
+                                 name='alt_l', extra_maps={},
+                                 extra_modifiers=set())),
             ('.',         ModMap(map_tap='.', map_hold='<alt_r>',
-                                name='alt_r', extra_maps={},
-                                extra_modifiers=set()))
+                                 name='alt_r', extra_maps={},
+                                 extra_modifiers=set()))
         ]
 
         mod_taps = []
@@ -205,7 +204,7 @@ class MyLayerHandler(InputHandler):
         for key, mod_map in mod_maps:
             def base_switch_to_mod():
                 MyLayerHandler.files[mod_map.name] = \
-                    os.path.join(path_keyboard_info, 
+                    os.path.join(path_keyboard_info,
                                  mod_map.name + "_activated")
                 self.remove_all_files()
                 self.make_file(mod_map.name)
@@ -218,7 +217,7 @@ class MyLayerHandler(InputHandler):
             })
 
             mod_taps.append(ModTap(
-                self, key, mod_map.map_tap, get_bindings, {}, 
+                self, key, mod_map.map_tap, get_bindings, {},
                 self.switch_to_base,
                 base_switch_to_mod, mod_map.extra_modifiers, Layer, time_no_tap,
                 name=" ".join([key, mod_map.name, "layer"])
