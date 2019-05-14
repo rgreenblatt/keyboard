@@ -11,6 +11,7 @@ from keyboard.mod_tap import ModTap
 from keyboard.mod_toggle import ModToggle
 from keyboard.utils import InputHandler, alert, nothing, run_background
 
+
 class MyLayerHandler(InputHandler):
 
     files = {
