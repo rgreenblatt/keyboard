@@ -18,4 +18,4 @@ if __name__ == "__main__":
             alert("SYM LOCK", time=1)
         prev_capslock_on = capslock_on
         prev_sym_lock_on = sym_lock_on
-        sleep(0.02)
+        sleep(0.1)
