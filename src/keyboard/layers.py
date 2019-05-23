@@ -355,7 +355,7 @@ class MyLayerHandler(InputHandler):
                 alert("XDOTOOL CHANGE FOCUS ERROR", str(e))
                 return
 
-            if window_name == "nvim":
+            if window_name.endswith(":nvim") or window_name == "nvim":
                 self.control_press("\\")
                 self.control_press("n")
                 self.press("g")
