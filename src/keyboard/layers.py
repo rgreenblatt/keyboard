@@ -1,8 +1,8 @@
 import contextlib
 import os
-from collections import defaultdict, namedtuple
+from collections import namedtuple
 from pathlib import Path
-from subprocess import Popen, check_output
+from subprocess import check_output
 
 from evdev import KeyEvent
 
@@ -34,7 +34,7 @@ class MyLayerHandler(InputHandler):
         BaseLayer = namedtuple("BaseLayer", "bindings modifiers key_function")
 
         class Layer(BaseLayer):
-            def __new__(self, bindings, modifiers,
+            def __new__(cls, bindings, modifiers,
                         key_function=standard_key_function):
                 return super(Layer, self).__new__(self, bindings, modifiers,
                                                   key_function)
@@ -247,9 +247,6 @@ class MyLayerHandler(InputHandler):
             union(sym_space.parent_modifiers).
             union(mod_modifiers)
         )
-
-        capslock_remap = self.generate_remap_pass_throughs(
-            {"<capslock>": "<esc>"})
 
         self.disable_keyboard_layer = Layer(
             bindings={
