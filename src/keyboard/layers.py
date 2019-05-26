@@ -36,7 +36,7 @@ class MyLayerHandler(InputHandler):
         class Layer(BaseLayer):
             def __new__(cls, bindings, modifiers,
                         key_function=standard_key_function):
-                return super(Layer, self).__new__(self, bindings, modifiers,
+                return super(Layer, cls).__new__(cls, bindings, modifiers,
                                                   key_function)
 
         standard_dict = {
