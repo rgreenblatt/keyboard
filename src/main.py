@@ -1,8 +1,9 @@
+#pylint: disable=missing-docstring
 import os
 import time
 from distutils.util import strtobool
 from signal import SIGKILL
-from sys import argv, exit
+from sys import argv
 
 from evdev import InputDevice
 from evdev import ecodes as e
@@ -40,7 +41,7 @@ class KeyboardHandler(FileSystemEventHandler):
         if time.time() - self.last_update > 1:
             to_remove = []
             for key, pid in self.pid_map.items():
-                found_pid, status = os.waitpid(pid, os.WNOHANG)
+                found_pid, _ = os.waitpid(pid, os.WNOHANG)
                 if found_pid == pid:
                     to_remove.append(key)
             for remove in to_remove:
@@ -56,14 +57,15 @@ class KeyboardHandler(FileSystemEventHandler):
             pid = os.fork()
             if pid == 0:
                 try:
-                    handler = MyLayerHandler(self.debug)
                     dev = InputDevice(keyboard.path)
+                    handler = MyLayerHandler(
+                        self.debug, "Gergo" in dev.name)
                     dev.grab()
                     for event in dev.read_loop():
                         if event.type == e.EV_KEY:
                             handler.key(event.code, event.value)
                 except Exception as excep:
-                    if type(excep) == OSError and excep.errno == 19:
+                    if isinstance(excep, OSError) and excep.errno == 19:
                         print("Keyboard disconnected:", excep)
                         alert("Keyboard disconnected", "")
                     else:
@@ -77,11 +79,12 @@ class KeyboardHandler(FileSystemEventHandler):
 
 
 if __name__ == '__main__':
-    debug = len(argv) > 1 and bool(strtobool(argv[1]))
+    # pylint: disable=invalid-name
+    is_debug = len(argv) > 1 and bool(strtobool(argv[1]))
 
     alert("Keyboard is mapped", time=3)
 
-    k_handler = KeyboardHandler(debug, os.getpid())
+    k_handler = KeyboardHandler(is_debug, os.getpid())
     k_handler.update()
 
     observer = Observer()

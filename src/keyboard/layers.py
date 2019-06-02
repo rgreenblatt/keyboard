@@ -24,7 +24,7 @@ class MyLayerHandler(InputHandler):
     for key in files:
         files[key] = os.path.join(path_keyboard_info, files[key])
 
-    def __init__(self, debug=False):
+    def __init__(self, debug=False, is_gergo=False):
         super().__init__()
         self.debug = debug
 
@@ -37,13 +37,18 @@ class MyLayerHandler(InputHandler):
             def __new__(cls, bindings, modifiers,
                         key_function=standard_key_function):
                 return super(Layer, cls).__new__(cls, bindings, modifiers,
-                                                  key_function)
+                                                 key_function)
 
-        standard_dict = {
-            "[": "<backspace>", "<backspace>": "<capslock>",
-            "<capslock>": "<esc>", "<control_l>": ["<control_l>", "<alt_l>"],
-            "<control_r>": ["<control_r>", "<alt_r>"],
-        }
+        if is_gergo:
+            standard_dict = {
+                "<up>": "^", "<down>": "(", "<left>": ")", "<right>": "$"
+            }
+        else:
+            standard_dict = {
+                "[": "<backspace>", "<backspace>": "<capslock>",
+                "<capslock>": "<esc>", "<control_l>": ["<control_l>", "<alt_l>"],
+                "<control_r>": ["<control_r>", "<alt_r>"],
+            }
 
         standard_bindings = self.generate_remap_pass_throughs(standard_dict)
 
@@ -138,8 +143,10 @@ class MyLayerHandler(InputHandler):
 
         time_no_tap = 0.2
 
+        enter_function_escape_key = "<esc>" if is_gergo else "<capslock>"
+
         function_escape = ModTap(
-            self, "<capslock>", "<esc>", get_function_bindings,
+            self, enter_function_escape_key, "<esc>", get_function_bindings,
             standard_bindings, self.switch_to_base, base_switch_to_function,
             set(['<esc>']), Layer, time_no_tap, name="esc function layer"
         )
@@ -234,18 +241,25 @@ class MyLayerHandler(InputHandler):
         for mod_tap in mod_taps:
             mod_modifiers = mod_modifiers.union(mod_tap.parent_modifiers)
 
-        self.base_layer = Layer(
-            bindings={
-                **standard_bindings,
-                **function_escape.parent_bindings,
-                **function_enter.parent_bindings,
+        full_bindings = {
+            **standard_bindings,
+            **function_escape.parent_bindings,
+            **function_enter.parent_bindings
+        }
+        full_modifiers = function_escape.parent_modifiers.union(
+            function_enter.parent_modifiers)
+
+        if not is_gergo:
+            full_bindings.update({
                 **sym_space.parent_bindings,
                 **mod_parent_bindings
-            },
-            modifiers=function_escape.parent_modifiers.
-            union(function_enter.parent_modifiers).
-            union(sym_space.parent_modifiers).
-            union(mod_modifiers)
+            })
+            full_modifiers = full_modifiers.union(
+                sym_space.parent_modifiers).union(mod_modifiers)
+
+        self.base_layer = Layer(
+            bindings=full_bindings,
+            modifiers=full_modifiers
         )
 
         self.disable_keyboard_layer = Layer(
