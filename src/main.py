@@ -1,4 +1,3 @@
-#pylint: disable=missing-docstring
 import os
 import time
 from distutils.util import strtobool
@@ -14,6 +13,7 @@ from keyboard.constants import path_keyboard_info
 from keyboard.layers import MyLayerHandler
 from keyboard.utils import alert
 from test_keyboards import get_keyboards
+
 
 class KeyboardHandler(FileSystemEventHandler):
 
