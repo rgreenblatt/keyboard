@@ -24,6 +24,11 @@ class KeyboardHandler(FileSystemEventHandler):
         self.debug = debug
         self.last_update = 0
         self.parent_pid = parent_pid
+        try:
+            os.mkdir(os.path.join(path_keyboard_info, 'running'))
+        except FileExistsError as e:
+            alert("KEYBOARD ALREADY RUNNING")
+            raise RuntimeError("keyboard already running")
 
     def on_created(self, event):
         if event.src_path == os.path.join(path_keyboard_info, 'kill'):
@@ -66,10 +71,8 @@ class KeyboardHandler(FileSystemEventHandler):
                             handler.key(event.code, event.value)
                 except Exception as excep:
                     if isinstance(excep, OSError) and excep.errno == 19:
-                        print("Keyboard disconnected:", excep)
                         alert("Keyboard disconnected", "")
                     else:
-                        print("Keyboard error:", excep)
                         alert("KEYBOARD ERROR", str(excep))
                 finally:
                     exit()

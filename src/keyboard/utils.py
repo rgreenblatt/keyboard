@@ -4,15 +4,16 @@ from subprocess import DEVNULL, Popen
 from evdev import KeyEvent, UInput
 from evdev import ecodes as e
 
-from keyboard.constants import (code_char_map, shift_maps, control_maps, 
+from keyboard.constants import (code_char_map, shift_maps, control_maps,
                                 alt_maps, control_alt_maps)
 
-def nothing(*a):
+def nothing(*_):
     pass
 
 class Remaper():
-    def __call__(self, character_maps, callback=nothing, 
-        actions=[KeyEvent.key_down, KeyEvent.key_up, KeyEvent.key_hold]):
+    def __call__(self, character_maps, callback=nothing,
+                 actions=[KeyEvent.key_down, KeyEvent.key_up,
+                          KeyEvent.key_hold]):
         out = {}
         for f, t in character_maps.items():
             for v in actions:
@@ -43,7 +44,7 @@ class RemapModifierPress(Remaper):
         self.press_func = press_func
 
     def remap_action(self, t, v):
-        if v == KeyEvent.key_down or v == KeyEvent.key_hold:
+        if v in (KeyEvent.key_down, KeyEvent.key_hold):
             self.press_func(t, flush=True)
 
 class RemapString(Remaper):
@@ -116,11 +117,12 @@ class InputHandler():
             self.send_event(mod, KeyEvent.key_down)
             self.press(key)
             self.send_event(mod, KeyEvent.key_up, flush)
-        
+
         return mod_press
 
 def alert(title, text="", time=10):
-    os.system("notify-send -u critical -t {} '{}' '{}'".format(time * 1000, 
+    print("alert: {}".format(title))
+    os.system("notify-send -u critical -t {} '{}' '{}'".format(time * 1000,
                                                                title, text))
 
 def run_background(command):
