@@ -57,6 +57,8 @@ class KeyboardHandler(FileSystemEventHandler):
         self.last_update = time.time()
 
     def fork_keyboards(self, keyboards):
+        alert("Keyboard is mapped", time=3)
+
         pid_map = {}
         for keyboard in keyboards:
             pid = os.fork()
@@ -84,8 +86,6 @@ class KeyboardHandler(FileSystemEventHandler):
 if __name__ == '__main__':
     # pylint: disable=invalid-name
     is_debug = len(argv) > 1 and bool(strtobool(argv[1]))
-
-    alert("Keyboard is mapped", time=3)
 
     k_handler = KeyboardHandler(is_debug, os.getpid())
     k_handler.update()
