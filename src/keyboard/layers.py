@@ -41,7 +41,7 @@ class MyLayerHandler(InputHandler):
 
         if is_gergo:
             standard_dict = {
-                "<up>": "^", "<down>": "(", "<left>": ")", "<right>": "$"
+                "<up>": "+", "<down>": "`", "<left>": "\\", "<right>": "|"
             }
         else:
             standard_dict = {
