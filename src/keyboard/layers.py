@@ -108,7 +108,8 @@ class MyLayerHandler(InputHandler):
                  "p": ["i3-msg", "move", "workspace", "5"],
                  ";": ["inc_bright"], "'": ["dec_bright"],
                  "z": ["inc_vol", "5"], "x": ["dec_vol", "5"],
-                 "c": ["mute_vol"], "v": ["start_term"], "b": ["qutebrowser"]},
+                 "c": ["mute_vol"], "v": ["st"], "b": ["franz"],
+                 "<esc>": ["start_term"], "<enter>": ["qutebrowser"]},
                 nothing),
             **self.generate_remap_python_callable(
                 {"h": self.i3_change_focus("h"),
