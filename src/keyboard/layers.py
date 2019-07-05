@@ -15,8 +15,10 @@ from keyboard.utils import InputHandler, alert, nothing, run_background
 class MyLayerHandler(InputHandler):
 
     files = {
-        "sym": "sym_activated", "sym_single": "sym_single_activated",
-        "base": "base_activated", "sym_toggle": "sym_toggle_activated",
+        "sym": "sym_activated",
+        "sym_single": "sym_single_activated",
+        "base": "base_activated",
+        "sym_toggle": "sym_toggle_activated",
         "function": "function_activated",
         "keyboard_disabled": "keyboard_disabled_activated",
     }
@@ -34,19 +36,26 @@ class MyLayerHandler(InputHandler):
         BaseLayer = namedtuple("BaseLayer", "bindings modifiers key_function")
 
         class Layer(BaseLayer):
-            def __new__(cls, bindings, modifiers,
+            def __new__(cls,
+                        bindings,
+                        modifiers,
                         key_function=standard_key_function):
                 return super(Layer, cls).__new__(cls, bindings, modifiers,
                                                  key_function)
 
         if is_gergo:
             standard_dict = {
-                "<up>": "+", "<down>": "`", "<left>": "\\", "<right>": "|"
+                "<up>": "+",
+                "<down>": "`",
+                "<left>": "\\",
+                "<right>": "|"
             }
         else:
             standard_dict = {
-                "[": "<backspace>", "<backspace>": "<capslock>",
-                "<capslock>": "<esc>", "<control_l>": ["<control_l>", "<alt_l>"],
+                "[": "<backspace>",
+                "<backspace>": "<capslock>",
+                "<capslock>": "<esc>",
+                "<control_l>": ["<control_l>", "<alt_l>"],
                 "<control_r>": ["<control_r>", "<alt_r>"],
             }
 
@@ -68,60 +77,131 @@ class MyLayerHandler(InputHandler):
                     wrapped_bindings[key, key_event] = wrapped_action
 
                 return wrapped_bindings
+
             return get_wrapped_bindings
 
-        self_dict = {"<space>": "<space>", "<tab>": "<tab>",
-                     "<enter>": "<enter>", "<esc>": "<esc>",
-                     "<shift_l>": "-", "<shift_r>": "=", "<alt_l>": "[",
-                     "<alt_r>": "]",
-                     "q": "q", "w": "w", "e": "e", "r": "r", "t": "t",
-                     "y": "y", "u": "u", "i": "i", "o": "o", "p": "p",
-                     "a": "a", "s": "s", "d": "d", "f": "f", "g": "g",
-                     "h": "h", "j": "j", "k": "k", "l": "l", ";": ";",
-                     "'": "'", "z": "z", "x": "x", "c": "c", "v": "v",
-                     "b": "b", "n": "n", "m": "m", ",": ",", ".": ".",
-                     "/": "/", "`": "`",
-                     **standard_dict}
+        self_dict = {
+            "<space>": "<space>",
+            "<tab>": "<tab>",
+            "<enter>": "<enter>",
+            "<esc>": "<esc>",
+            "<shift_l>": "-",
+            "<shift_r>": "=",
+            "<alt_l>": "[",
+            "<alt_r>": "]",
+            "q": "q",
+            "w": "w",
+            "e": "e",
+            "r": "r",
+            "t": "t",
+            "y": "y",
+            "u": "u",
+            "i": "i",
+            "o": "o",
+            "p": "p",
+            "a": "a",
+            "s": "s",
+            "d": "d",
+            "f": "f",
+            "g": "g",
+            "h": "h",
+            "j": "j",
+            "k": "k",
+            "l": "l",
+            ";": ";",
+            "'": "'",
+            "z": "z",
+            "x": "x",
+            "c": "c",
+            "v": "v",
+            "b": "b",
+            "n": "n",
+            "m": "m",
+            ",": ",",
+            ".": ".",
+            "/": "/",
+            "`": "`",
+            **standard_dict
+        }
 
         sym_bindings = self.generate_remap_pass_throughs(
-            {"<capslock>": "<esc>", "q": "1", "w": "2", "e": "3",
-             "r": "4", "t": "5", "y": "6", "u": "7", "i": "8", "o": "9",
-             "p": "0", "a": "!", "s": "@", "d": "#", "f": "$", "g": "%",
-             "h": "^", "j": "&", "k": "*", "l": "(", ";": ")", "'": "<c-a-p>",
-             "z": "~", "x": "`", "c": "\\", "v": "|", "b": "<c-a-b>",
-             "n": "<c-a-n>", "m": "<c-a-a>", ",": "<c-a-f>", ".": "<c-a-g>",
-             "/": "<c-a-h>"},
-            nothing
-        )
+            {
+                "<capslock>": "<esc>",
+                "q": "1",
+                "w": "2",
+                "e": "3",
+                "r": "4",
+                "t": "5",
+                "y": "6",
+                "u": "7",
+                "i": "8",
+                "o": "9",
+                "p": "0",
+                "a": "!",
+                "s": "@",
+                "d": "#",
+                "f": "$",
+                "g": "%",
+                "h": "^",
+                "j": "&",
+                "k": "*",
+                "l": "(",
+                ";": ")",
+                "'": "<c-a-p>",
+                "z": "~",
+                "x": "`",
+                "c": "\\",
+                "v": "|",
+                "b": "<c-a-b>",
+                "n": "<c-a-n>",
+                "m": "<c-a-a>",
+                ",": "<c-a-f>",
+                ".": "<c-a-g>",
+                "/": "<c-a-h>"
+            }, nothing)
         function_bindings = {
-            ('<esc>', KeyEvent.key_down): self.switch_to_disable,
+            ('<esc>', KeyEvent.key_down):
+            self.switch_to_disable,
             **self.generate_remap_system_command(
-                {"q": ["i3-msg", "workspace", "1"],
-                 "w": ["i3-msg", "workspace", "2"],
-                 "e": ["i3-msg", "workspace", "3"],
-                 "r": ["i3-msg", "workspace", "4"],
-                 "t": ["i3-msg", "workspace", "5"],
-                 "y": ["i3-msg", "move", "workspace", "1"],
-                 "u": ["i3-msg", "move", "workspace", "2"],
-                 "i": ["i3-msg", "move", "workspace", "3"],
-                 "o": ["i3-msg", "move", "workspace", "4"],
-                 "p": ["i3-msg", "move", "workspace", "5"],
-                 ";": ["inc_bright"], "'": ["dec_bright"],
-                 "z": ["inc_vol", "5"], "x": ["dec_vol", "5"],
-                 "c": ["mute_vol"], "v": ["st"], "b": ["franz"],
-                 "<enter>": ["qutebrowser"], "<space>": ["start_term"]},
-                nothing),
+                {
+                    "q": ["i3-msg", "workspace", "1"],
+                    "w": ["i3-msg", "workspace", "2"],
+                    "e": ["i3-msg", "workspace", "3"],
+                    "r": ["i3-msg", "workspace", "4"],
+                    "t": ["i3-msg", "workspace", "5"],
+                    "y": ["i3-msg", "move", "workspace", "1"],
+                    "u": ["i3-msg", "move", "workspace", "2"],
+                    "i": ["i3-msg", "move", "workspace", "3"],
+                    "o": ["i3-msg", "move", "workspace", "4"],
+                    "p": ["i3-msg", "move", "workspace", "5"],
+                    ";": ["inc_bright"],
+                    "'": ["dec_bright"],
+                    "z": ["inc_vol", "5"],
+                    "x": ["dec_vol", "5"],
+                    "c": ["mute_vol"],
+                    "v": ["st"],
+                    "b": ["franz"],
+                    "<enter>": ["qutebrowser"],
+                    "<space>": ["start_term"]
+                }, nothing),
             **self.generate_remap_python_callable(
-                {"h": self.i3_change_focus("h"),
-                 "j": self.i3_change_focus("j"),
-                 "k": self.i3_change_focus("k"),
-                 "l": self.i3_change_focus("l")},
-                nothing),
+                {
+                    "h": self.i3_change_focus("h"),
+                    "j": self.i3_change_focus("j"),
+                    "k": self.i3_change_focus("k"),
+                    "l": self.i3_change_focus("l")
+                }, nothing),
             **self.generate_remap_pass_throughs(
-                {"a": "<pageup>", "s": "<pagedown>", "d": "<c-u>",
-                 "f": "<c-d>", "n": "<left>", "m": "<down>", ",": "<up>",
-                 ".": "<right>"},
-                nothing)
+                {
+                    "a": "<pageup>",
+                    "s": "<pagedown>",
+                    "d": "<c-u>",
+                    "f": "<c-d>",
+                    "n": "<left>",
+                    "m": "<down>",
+                    ",": "<up>",
+                    ".": "<right>"
+                }, nothing)
         }
 
         get_function_bindings = make_wrapper(function_bindings)
@@ -146,71 +226,117 @@ class MyLayerHandler(InputHandler):
 
         enter_function_escape_key = "<esc>" if is_gergo else "<capslock>"
 
-        function_escape = ModTap(
-            self, enter_function_escape_key, "<esc>", get_function_bindings,
-            standard_bindings, self.switch_to_base, base_switch_to_function,
-            set(['<esc>']), Layer, time_no_tap, name="esc function layer"
-        )
+        function_escape = ModTap(self,
+                                 enter_function_escape_key,
+                                 "<esc>",
+                                 get_function_bindings,
+                                 standard_bindings,
+                                 self.switch_to_base,
+                                 base_switch_to_function,
+                                 set(['<esc>']),
+                                 Layer,
+                                 time_no_tap,
+                                 name="esc function layer")
 
-        function_enter = ModTap(
-            self, "<enter>", "<enter>", get_function_bindings,
-            standard_bindings, self.switch_to_base, base_switch_to_function,
-            set(['<esc>']), Layer, time_no_tap, name="enter function layer"
-        )
+        function_enter = ModTap(self,
+                                "<enter>",
+                                "<enter>",
+                                get_function_bindings,
+                                standard_bindings,
+                                self.switch_to_base,
+                                base_switch_to_function,
+                                set(['<esc>']),
+                                Layer,
+                                time_no_tap,
+                                name="enter function layer")
 
-        sym_space = ModTap(
-            self, "<space>", "<space>", get_sym_bindings, standard_bindings,
-            self.switch_to_base, base_switch_to_sym, set(), Layer, time_no_tap,
-            name="space sym layer"
-        )
+        sym_space = ModTap(self,
+                           "<space>",
+                           "<space>",
+                           get_sym_bindings,
+                           standard_bindings,
+                           self.switch_to_base,
+                           base_switch_to_sym,
+                           set(),
+                           Layer,
+                           time_no_tap,
+                           name="space sym layer")
 
-        sym_space_toggle = ModToggle(
-            self, "<space>", ["<shift_l>", "<shift_r>"], sym_bindings, {},
-            standard_bindings, self.switch_to_base, base_switch_to_sym_toggle,
-            set(), Layer, name="space sym layer"
-        )
+        sym_space_toggle = ModToggle(self,
+                                     "<space>", ["<shift_l>", "<shift_r>"],
+                                     sym_bindings, {},
+                                     standard_bindings,
+                                     self.switch_to_base,
+                                     base_switch_to_sym_toggle,
+                                     set(),
+                                     Layer,
+                                     name="space sym layer")
 
-        ModMap = namedtuple('ModMap',
-                            'map_tap map_hold name extra_maps extra_modifiers')
+        ModMap = namedtuple(
+            'ModMap', 'map_tap map_hold name extra_maps extra_modifiers')
 
         shift_to_shift = self.generate_remap_pass_throughs({
-            '<shift_l>': '<shift_l>', '<shift_r>': '<shift_r>'
+            '<shift_l>':
+            '<shift_l>',
+            '<shift_r>':
+            '<shift_r>'
         })
 
         mod_maps = [
-            ('<shift_l>', ModMap(map_tap='-', map_hold='<shift_l>',
-                                 name='shift',
-                                 extra_maps=sym_space_toggle.parent_bindings,
-                                 extra_modifiers=sym_space_toggle.
-                                 parent_modifiers)),
-            ('<shift_r>', ModMap(map_tap='=', map_hold='<shift_r>',
-                                 name='shift',
-                                 extra_maps=sym_space_toggle.parent_bindings,
-                                 extra_modifiers=sym_space_toggle.
-                                 parent_modifiers)),
-            ('<alt_l>',   ModMap(map_tap='[', map_hold='<super>',
-                                 name='alt', extra_maps=shift_to_shift,
-                                 extra_modifiers=set())),
-            ('<alt_r>',   ModMap(map_tap=']', map_hold='<super>',
-                                 name='alt', extra_maps=shift_to_shift,
-                                 extra_modifiers=set())),
-            ('z',         ModMap(map_tap='z', map_hold='<control_l>',
-                                 name='control', extra_maps={},
-                                 extra_modifiers=set())),
-            ('/',         ModMap(map_tap='/', map_hold='<control_r>',
-                                 name='control', extra_maps={},
-                                 extra_modifiers=set())),
-            ('x',         ModMap(map_tap='x', map_hold='<alt_l>',
-                                 name='alt_l', extra_maps={},
-                                 extra_modifiers=set())),
-            ('.',         ModMap(map_tap='.', map_hold='<alt_r>',
-                                 name='alt_r', extra_maps={},
-                                 extra_modifiers=set()))
+            ('<shift_l>',
+             ModMap(map_tap='-',
+                    map_hold='<shift_l>',
+                    name='shift',
+                    extra_maps=sym_space_toggle.parent_bindings,
+                    extra_modifiers=sym_space_toggle.parent_modifiers)),
+            ('<shift_r>',
+             ModMap(map_tap='=',
+                    map_hold='<shift_r>',
+                    name='shift',
+                    extra_maps=sym_space_toggle.parent_bindings,
+                    extra_modifiers=sym_space_toggle.parent_modifiers)),
+            ('<alt_l>',
+             ModMap(map_tap='[',
+                    map_hold='<super>',
+                    name='alt',
+                    extra_maps=shift_to_shift,
+                    extra_modifiers=set())),
+            ('<alt_r>',
+             ModMap(map_tap=']',
+                    map_hold='<super>',
+                    name='alt',
+                    extra_maps=shift_to_shift,
+                    extra_modifiers=set())),
+            ('z',
+             ModMap(map_tap='z',
+                    map_hold='<control_l>',
+                    name='control',
+                    extra_maps={},
+                    extra_modifiers=set())),
+            ('/',
+             ModMap(map_tap='/',
+                    map_hold='<control_r>',
+                    name='control',
+                    extra_maps={},
+                    extra_modifiers=set())),
+            ('x',
+             ModMap(map_tap='x',
+                    map_hold='<alt_l>',
+                    name='alt_l',
+                    extra_maps={},
+                    extra_modifiers=set())),
+            ('.',
+             ModMap(map_tap='.',
+                    map_hold='<alt_r>',
+                    name='alt_r',
+                    extra_maps={},
+                    extra_modifiers=set()))
         ]
 
         mod_taps = []
 
         for key, mod_map in mod_maps:
+
             def base_switch_to_mod():
                 MyLayerHandler.files[mod_map.name] = \
                     os.path.join(path_keyboard_info,
@@ -220,17 +346,21 @@ class MyLayerHandler(InputHandler):
                 print("Switching to ", mod_map.name) if self.debug else None
 
             get_bindings = make_wrapper({
-                **self.make_generate_remap_mod_press(mod_map.map_hold)
-                (self_dict),
+                **self.make_generate_remap_mod_press(mod_map.map_hold)(self_dict),
                 **mod_map.extra_maps
             })
 
-            mod_taps.append(ModTap(
-                self, key, mod_map.map_tap, get_bindings, {},
-                self.switch_to_base,
-                base_switch_to_mod, mod_map.extra_modifiers, Layer, time_no_tap,
-                name=" ".join([key, mod_map.name, "layer"])
-            ))
+            mod_taps.append(
+                ModTap(self,
+                       key,
+                       mod_map.map_tap,
+                       get_bindings, {},
+                       self.switch_to_base,
+                       base_switch_to_mod,
+                       mod_map.extra_modifiers,
+                       Layer,
+                       time_no_tap,
+                       name=" ".join([key, mod_map.name, "layer"])))
 
         mod_parent_bindings = {}
 
@@ -258,20 +388,19 @@ class MyLayerHandler(InputHandler):
             full_modifiers = full_modifiers.union(
                 sym_space.parent_modifiers).union(mod_modifiers)
 
-        self.base_layer = Layer(
-            bindings=full_bindings,
-            modifiers=full_modifiers
-        )
+        self.base_layer = Layer(bindings=full_bindings,
+                                modifiers=full_modifiers)
 
-        self.disable_keyboard_layer = Layer(
-            bindings={
-                ('<esc>', KeyEvent.key_up): nothing,
-                ('<esc>', KeyEvent.key_down): self.switch_to_base,
-                ('<esc>', KeyEvent.key_hold): nothing,
-            },
-            modifiers=set(['<esc>']),
-            key_function=disable_key_function
-        )
+        self.disable_keyboard_layer = Layer(bindings={
+            ('<esc>', KeyEvent.key_up):
+            nothing,
+            ('<esc>', KeyEvent.key_down):
+            self.switch_to_base,
+            ('<esc>', KeyEvent.key_hold):
+            nothing,
+        },
+                                            modifiers=set(['<esc>']),
+                                            key_function=disable_key_function)
 
         self.layer = self.base_layer
         self.held_keys = {}
@@ -352,14 +481,13 @@ class MyLayerHandler(InputHandler):
     def i3_change_focus(self, direction):
         def change():
             try:
-                window_id = check_output(
-                    ['xdotool', 'getwindowfocus']
-                ).decode("utf-8").strip()
+                window_id = check_output(['xdotool', 'getwindowfocus'
+                                          ]).decode("utf-8").strip()
                 print("window_id for change focus:",
                       window_id) if self.debug else None
                 window_name = check_output(
-                    ['xdotool', 'getwindowname', window_id]
-                ).decode("utf-8").strip()
+                    ['xdotool', 'getwindowname',
+                     window_id]).decode("utf-8").strip()
                 print("window_name for change focus:",
                       window_name) if self.debug else None
             except Exception as e:
@@ -383,4 +511,5 @@ class MyLayerHandler(InputHandler):
                 elif direction == "l":
                     full_direction_name = "right"
                 run_background(["i3-msg", "focus", full_direction_name])
+
         return change

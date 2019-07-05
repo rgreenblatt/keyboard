@@ -7,14 +7,24 @@ from recordclass import recordclass
 from keyboard.utils import nothing
 from keyboard.constants import code_char_map
 
+
 class ModTap():
 
     ModKeyEvents = recordclass("ModKeyEvents",
                                "no_keypress_on_finish layer_exited")
 
-    def __init__(self, handler, key, map_tap, get_layer_hold,
-                 no_callback_remaps, switch_to_parent, base_switch_to_self,
-                 additional_modifiers, Layer, time_no_tap, name="hold"):
+    def __init__(self,
+                 handler,
+                 key,
+                 map_tap,
+                 get_layer_hold,
+                 no_callback_remaps,
+                 switch_to_parent,
+                 base_switch_to_self,
+                 additional_modifiers,
+                 Layer,
+                 time_no_tap,
+                 name="hold"):
         self.key = key
         self.handler = handler
         self.map_tap = map_tap
@@ -82,7 +92,8 @@ class ModTap():
     def create_key_down(self, key, map_to_callable):
         def key_down(key=key,
                      currently_pressed_no_hold=self.currently_pressed_no_hold,
-                     mod_key_events=self.mod_key_events, t_enter=self.t_enter):
+                     mod_key_events=self.mod_key_events,
+                     t_enter=self.t_enter):
             t_delta = time.time() - t_enter
 
             mod_key_events.no_keypress_on_finish |= t_delta > self.time_no_tap
@@ -96,7 +107,8 @@ class ModTap():
         return key_down
 
     def create_key_up(self, key, map_to_callable):
-        def key_up(key=key, mod_key_events=self.mod_key_events,
+        def key_up(key=key,
+                   mod_key_events=self.mod_key_events,
                    currently_pressed_no_hold=self.currently_pressed_no_hold,
                    t_enter=self.t_enter):
             t_delta = time.time() - t_enter
@@ -113,7 +125,8 @@ class ModTap():
         return key_up
 
     def create_key_hold(self, key, map_to_callable):
-        def key_hold(key=key, mod_key_events=self.mod_key_events,
+        def key_hold(key=key,
+                     mod_key_events=self.mod_key_events,
                      currently_pressed_no_hold=self.currently_pressed_no_hold,
                      t_enter=self.t_enter):
             t_delta = time.time() - t_enter
@@ -136,15 +149,14 @@ class ModTap():
         self.base_switch_to_self()
         print("Switching to", self.name, "using", self.key) \
             if self.handler.debug else None
-        self.handler.layer = self.Layer(
-            bindings={
-                **self.get_layer_hold(self.create_key_up, self.create_key_down,
-                                      self.create_key_hold),
-                **self.no_callback_remaps,
-                (self.key, KeyEvent.key_up): self.mod_key_up,
-                (self.key, KeyEvent.key_down):
-                lambda: print(self.name, "MOD WAS PRESSED NOT EXPECTED"),
-                (self.key, KeyEvent.key_hold): self.mod_key_hold,
-            },
-            modifiers=self.modifiers
-        )
+        self.handler.layer = self.Layer(bindings={
+            **self.get_layer_hold(self.create_key_up, self.create_key_down, self.create_key_hold),
+            **self.no_callback_remaps,
+            (self.key, KeyEvent.key_up):
+            self.mod_key_up,
+            (self.key, KeyEvent.key_down):
+            lambda: print(self.name, "MOD WAS PRESSED NOT EXPECTED"),
+            (self.key, KeyEvent.key_hold):
+            self.mod_key_hold,
+        },
+                                        modifiers=self.modifiers)

@@ -21,4 +21,4 @@ if __name__ == '__main__':
     dev.grab()
     for event in dev.read_loop():
         if event.type == e.EV_KEY:
-           print(event.code) 
+            print(event.code)

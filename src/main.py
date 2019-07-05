@@ -51,9 +51,10 @@ class KeyboardHandler(FileSystemEventHandler):
                     to_remove.append(key)
             for remove in to_remove:
                 del self.pid_map[remove]
-            self.pid_map.update(self.fork_keyboards(
-                filter(lambda x: x.path not in self.pid_map, get_keyboards())
-            ))
+            self.pid_map.update(
+                self.fork_keyboards(
+                    filter(lambda x: x.path not in self.pid_map,
+                           get_keyboards())))
         self.last_update = time.time()
 
     def fork_keyboards(self, keyboards):
@@ -65,8 +66,7 @@ class KeyboardHandler(FileSystemEventHandler):
             if pid == 0:
                 try:
                     dev = InputDevice(keyboard.path)
-                    handler = MyLayerHandler(
-                        self.debug, "Gergo" in dev.name)
+                    handler = MyLayerHandler(self.debug, "Gergo" in dev.name)
                     dev.grab()
                     for event in dev.read_loop():
                         if event.type == e.EV_KEY:

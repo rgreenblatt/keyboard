@@ -8,7 +8,7 @@ from keyboard.utils import alert
 if __name__ == "__main__":
     prev_capslock_on = False
     prev_sym_lock_on = False
-    while(True):
+    while (True):
         capslock_on = check_output("check_caps_on").decode(
             "utf-8").strip() == "on"
         sym_lock_on = os.path.isfile(MyLayerHandler.files["sym_toggle"])
