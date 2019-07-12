@@ -9,23 +9,23 @@ from evdev import KeyEvent
 from keyboard.constants import code_char_map, path_keyboard_info
 from keyboard.mod_tap import ModTap
 from keyboard.mod_toggle import ModToggle
-from keyboard.utils import InputHandler, alert, nothing, run_background
+from keyboard.utils import (InputHandler, alert, nothing, run_background,
+                            debug_print)
+
+files = {
+    "sym": "sym_activated",
+    "sym_single": "sym_single_activated",
+    "base": "base_activated",
+    "sym_toggle": "sym_toggle_activated",
+    "function": "function_activated",
+    "keyboard_disabled": "keyboard_disabled_activated",
+}
+
+for file in files:
+    files[file] = os.path.join(path_keyboard_info, files[file])
 
 
 class MyLayerHandler(InputHandler):
-
-    files = {
-        "sym": "sym_activated",
-        "sym_single": "sym_single_activated",
-        "base": "base_activated",
-        "sym_toggle": "sym_toggle_activated",
-        "function": "function_activated",
-        "keyboard_disabled": "keyboard_disabled_activated",
-    }
-
-    for key in files:
-        files[key] = os.path.join(path_keyboard_info, files[key])
-
     def __init__(self, debug=False, is_gergo=False):
         super().__init__()
         self.debug = debug
@@ -210,17 +210,17 @@ class MyLayerHandler(InputHandler):
         def base_switch_to_sym():
             self.remove_all_files()
             self.make_file("sym")
-            print("Switching to sym") if self.debug else None
+            debug_print(self.debug, "Switching to sym")
 
         def base_switch_to_function():
             self.remove_all_files()
             self.make_file("function")
-            print("Switching to function") if self.debug else None
+            debug_print(self.debug, "Switching to function")
 
         def base_switch_to_sym_toggle():
             self.remove_all_files()
             self.make_file("sym_toggle")
-            print("Switching to sym toggle") if self.debug else None
+            debug_print(self.debug, "Switching to sym toggle")
 
         time_no_tap = 0.2
 
@@ -336,14 +336,13 @@ class MyLayerHandler(InputHandler):
         mod_taps = []
 
         for key, mod_map in mod_maps:
-
-            def base_switch_to_mod():
-                MyLayerHandler.files[mod_map.name] = \
+            def base_switch_to_mod(mod_map=mod_map):
+                files[mod_map.name] = \
                     os.path.join(path_keyboard_info,
                                  mod_map.name + "_activated")
                 self.remove_all_files()
                 self.make_file(mod_map.name)
-                print("Switching to ", mod_map.name) if self.debug else None
+                debug_print(self.debug, "Switching to ", mod_map.name)
 
             get_bindings = make_wrapper({
                 **self.make_generate_remap_mod_press(mod_map.map_hold)(self_dict),
@@ -423,10 +422,10 @@ class MyLayerHandler(InputHandler):
                 key = code_char_map[code]
                 key_value = key, value
                 if key in self.held_keys:
-                    print('held key:', key, value) if self.debug else None
+                    debug_print(self.debug, 'held key:', key, value)
                     held_layer = self.held_keys[key]
                     if value == KeyEvent.key_up:
-                        print("removing held") if self.debug else None
+                        debug_print(self.debug, "removing held")
                         self.remove_held_key(key)
                     if not is_disable:
                         if key_value in held_layer:
@@ -434,22 +433,20 @@ class MyLayerHandler(InputHandler):
                         else:
                             self.write(key, value, True)
                 elif key_value in self.layer.bindings:
-                    print('key:', key, value) if self.debug else None
+                    debug_print(self.debug, 'key:', key, value)
                     if value == KeyEvent.key_down and key not in self.layer.modifiers:
-                        print("added to hold") if self.debug else None
+                        debug_print(self.debug, "added to hold")
                         self.held_keys[key] = self.layer.bindings
                     self.layer.bindings[key_value]()
                 else:
-                    print('key not found in current bindings') if self.debug \
-                        else None
+                    debug_print(self.debug, 'key not found in current bindings')
                     if value == KeyEvent.key_down:
-                        print("added to hold") if self.debug else None
+                        debug_print(self.debug, "added to hold")
                         self.held_keys[key] = self.layer.bindings
                     if not is_disable:
                         self.write(key, value, True)
             else:
-                print('key not found in known characters') if self.debug \
-                    else None
+                debug_print(self.debug, 'key not found in known characters')
                 if not is_disable:
                     self.write_raw(code, value, True)
 
@@ -459,23 +456,23 @@ class MyLayerHandler(InputHandler):
         self.layer.key_function(code, value)
 
     def remove_all_files(self):
-        for f in self.files.values():
+        for f in files.values():
             with contextlib.suppress(FileNotFoundError):
                 os.remove(f)
 
     def make_file(self, f_name):
-        Path(self.files[f_name]).touch()
+        Path(files[f_name]).touch()
 
     def switch_to_disable(self):
         self.remove_all_files()
         self.make_file("keyboard_disabled")
-        print("Disabling keyboard") if self.debug else None
+        debug_print("Disabling keyboard")
         self.layer = self.disable_keyboard_layer
 
     def switch_to_base(self):
         self.remove_all_files()
         self.make_file("base")
-        print("Switching to base") if self.debug else None
+        debug_print(self.debug, "Switching to base")
         self.layer = self.base_layer
 
     def i3_change_focus(self, direction):
@@ -483,15 +480,13 @@ class MyLayerHandler(InputHandler):
             try:
                 window_id = check_output(['xdotool', 'getwindowfocus'
                                           ]).decode("utf-8").strip()
-                print("window_id for change focus:",
-                      window_id) if self.debug else None
+                debug_print(self.debug, "window_id for change focus:",
+                            window_id)
                 window_name = check_output(
                     ['xdotool', 'getwindowname',
                      window_id]).decode("utf-8").strip()
-                print("window_name for change focus:",
-                      window_name) if self.debug else None
+                debug_print("window_name for change focus:", window_name)
             except Exception as e:
-                print("xdotool change focus command error:", e)
                 alert("XDOTOOL CHANGE FOCUS ERROR", str(e))
                 return
 

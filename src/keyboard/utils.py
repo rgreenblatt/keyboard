@@ -146,6 +146,9 @@ def run_background(command):
         print("Background command error:", e)
         alert("BACKGROUND PROCESS ERROR", str(e))
 
+def debug_print(debug, *text):
+    if debug:
+        print(*text)
 
 if __name__ == '__main__':
     u_input = InputHandler()

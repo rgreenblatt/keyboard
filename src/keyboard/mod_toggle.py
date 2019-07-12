@@ -1,7 +1,6 @@
 from evdev import KeyEvent
-from recordclass import recordclass
 
-from keyboard.utils import nothing
+from keyboard.utils import nothing, debug_print
 
 
 class ModToggle():
@@ -40,8 +39,8 @@ class ModToggle():
 
     def create_switch_to_self_modified(self, switch_key):
         def switch_to_self_modified():
-            print("Switching to modified ", self.name, "using", self.key) \
-                if self.handler.debug else None
+            debug_print(self.handler.debug, "Switching to modified ",
+                        self.name, "using", self.key)
 
             self.handler.layer = self.Layer(bindings={
                 **self.bindings_modified,
@@ -65,8 +64,8 @@ class ModToggle():
 
     def switch_to_self(self):
         self.base_switch_to_self()
-        print("Switching to", self.name, "using", self.key) \
-            if self.handler.debug else None
+        debug_print(self.handler.debug, "Switching to", self.name, "using",
+                    self.key)
         mod_binding_sets = [{
             (mod, KeyEvent.key_up):
             nothing,
