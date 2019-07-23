@@ -179,7 +179,7 @@ class MyLayerHandler(InputHandler):
                     "z": ["inc_vol", "5"],
                     "x": ["dec_vol", "5"],
                     "c": ["mute_vol"],
-                    "v": ["st"],
+                    "v": ["i3-sensible-terminal"],
                     "b": ["franz"],
                     "<enter>": ["qutebrowser"],
                     "<space>": ["start_term"]
