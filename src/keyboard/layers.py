@@ -184,15 +184,12 @@ class MyLayerHandler(InputHandler):
                     "<enter>": ["qutebrowser"],
                     "<space>": ["start_term"]
                 }, nothing),
-            **self.generate_remap_python_callable(
-                {
-                    "h": self.i3_change_focus("h"),
-                    "j": self.i3_change_focus("j"),
-                    "k": self.i3_change_focus("k"),
-                    "l": self.i3_change_focus("l")
-                }, nothing),
             **self.generate_remap_pass_throughs(
                 {
+                    "h": "<a-h>",
+                    "j": "<a-j>",
+                    "k": "<a-k>",
+                    "l": "<a-l>",
                     "a": "<pageup>",
                     "s": "<pagedown>",
                     "d": "<c-u>",

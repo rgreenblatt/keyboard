@@ -66,6 +66,8 @@ class KeyboardHandler(FileSystemEventHandler):
             if pid == 0:
                 try:
                     dev = InputDevice(keyboard.path)
+                    if "Gergo" in dev.name:
+                        return
                     handler = MyLayerHandler(self.debug, "Gergo" in dev.name)
                     dev.grab()
                     for event in dev.read_loop():
