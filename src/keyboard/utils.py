@@ -86,7 +86,7 @@ class InputHandler():
             lambda mod: RemapModifierPress(self, self.make_mod_press(mod))
         self.shift_press = self.make_mod_press('<shift_l>')
         self.control_press = self.make_mod_press('<control_l>')
-        self.alt_press = self.make_mod_press('<control_l>')
+        self.alt_press = self.make_mod_press('<alt_l>')
         self.control_alt_press = self.make_mod_press(
             ['<control_l>', '<alt_l>'])
 
