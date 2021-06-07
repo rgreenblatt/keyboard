@@ -26,7 +26,7 @@ for file in files:
 
 
 class MyLayerHandler(InputHandler):
-    def __init__(self, debug=False, is_gergo=False):
+    def __init__(self, debug=False):
         super().__init__()
         self.debug = debug
 
@@ -43,21 +43,13 @@ class MyLayerHandler(InputHandler):
                 return super(Layer, cls).__new__(cls, bindings, modifiers,
                                                  key_function)
 
-        if is_gergo:
-            standard_dict = {
-                "<up>": "+",
-                "<down>": "`",
-                "<left>": "\\",
-                "<right>": "|"
-            }
-        else:
-            standard_dict = {
-                "[": "<backspace>",
-                "<backspace>": "<capslock>",
-                "<capslock>": "<esc>",
-                "<control_l>": ["<control_l>", "<alt_l>"],
-                "<control_r>": ["<control_r>", "<alt_r>"],
-            }
+        standard_dict = {
+            "[": "<backspace>",
+            "<backspace>": "<capslock>",
+            "<capslock>": "<esc>",
+            "<control_l>": ["<control_l>", "<alt_l>"],
+            "<control_r>": ["<control_r>", "<alt_r>"],
+        }
 
         standard_bindings = self.generate_remap_pass_throughs(standard_dict)
 
@@ -220,7 +212,7 @@ class MyLayerHandler(InputHandler):
 
         time_no_tap = 0.2
 
-        enter_function_escape_key = "<esc>" if is_gergo else "<capslock>"
+        enter_function_escape_key = "<capslock>"
 
         function_escape = ModTap(self,
                                  enter_function_escape_key,
@@ -332,6 +324,7 @@ class MyLayerHandler(InputHandler):
         mod_taps = []
 
         for key, mod_map in mod_maps:
+
             def base_switch_to_mod(mod_map=mod_map):
                 files[mod_map.name] = \
                     os.path.join(path_keyboard_info,
@@ -375,13 +368,12 @@ class MyLayerHandler(InputHandler):
         full_modifiers = function_escape.parent_modifiers.union(
             function_enter.parent_modifiers)
 
-        if not is_gergo:
-            full_bindings.update({
-                **sym_space.parent_bindings,
-                **mod_parent_bindings
-            })
-            full_modifiers = full_modifiers.union(
-                sym_space.parent_modifiers).union(mod_modifiers)
+        full_bindings.update({
+            **sym_space.parent_bindings,
+            **mod_parent_bindings
+        })
+        full_modifiers = full_modifiers.union(
+            sym_space.parent_modifiers).union(mod_modifiers)
 
         self.base_layer = Layer(bindings=full_bindings,
                                 modifiers=full_modifiers)
@@ -435,7 +427,8 @@ class MyLayerHandler(InputHandler):
                         self.held_keys[key] = self.layer.bindings
                     self.layer.bindings[key_value]()
                 else:
-                    debug_print(self.debug, 'key not found in current bindings')
+                    debug_print(self.debug,
+                                'key not found in current bindings')
                     if value == KeyEvent.key_down:
                         debug_print(self.debug, "added to hold")
                         self.held_keys[key] = self.layer.bindings
