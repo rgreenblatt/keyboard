@@ -144,11 +144,11 @@ class MyLayerHandler(InputHandler):
                 "c": "<F3>",
                 "v": "<F4>",
                 "b": "<F5>",
-                "n": "\\",
-                "m": "~",
-                ",": "`",
-                ".": "|",
-                "/": "<F60>"
+                "n": "<F6>",
+                "m": "\\",
+                ",": "~",
+                ".": "`",
+                "/": "|"
             }, nothing)
         function_bindings = {
             ('<esc>', KeyEvent.key_down):
