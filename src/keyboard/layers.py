@@ -250,15 +250,19 @@ class MyLayerHandler(InputHandler):
                            time_no_tap,
                            name="space sym layer")
 
-        sym_space_toggle = ModToggle(self,
-                                     "<space>", ["<shift_l>", "<shift_r>"],
-                                     sym_bindings, {},
-                                     standard_bindings,
-                                     self.switch_to_base,
-                                     base_switch_to_sym_toggle,
-                                     set(),
-                                     Layer,
-                                     name="space sym layer")
+        sym_space_toggle = ModToggle(
+            self,
+            "`",
+            ["<shift_l>", "<shift_r>"],
+            sym_bindings,
+            {},
+            standard_bindings,
+            self.switch_to_base,
+            base_switch_to_sym_toggle,
+            set(),
+            Layer,
+            name="space sym layer",
+        )
 
         ModMap = namedtuple(
             'ModMap', 'map_tap map_hold name extra_maps extra_modifiers')
