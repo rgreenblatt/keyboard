@@ -44,7 +44,8 @@ class MyLayerHandler(InputHandler):
                                                  key_function)
 
         standard_dict = {
-            "[": "<backspace>",
+            "[": "Z",
+            "<tab>": "Z",
             "<backspace>": "<capslock>",
             "<capslock>": "<esc>",
             "<control_l>": ["<control_l>", "<alt_l>"],
@@ -74,7 +75,7 @@ class MyLayerHandler(InputHandler):
 
         self_dict = {
             "<space>": "<space>",
-            "<tab>": "<tab>",
+            "<tab>": "Z",
             "<enter>": "<enter>",
             "<esc>": "<esc>",
             "<shift_l>": "-",
