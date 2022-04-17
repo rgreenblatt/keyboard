@@ -44,8 +44,7 @@ class MyLayerHandler(InputHandler):
                                                  key_function)
 
         standard_dict = {
-            "[": "Z",
-            "<tab>": "Z",
+            "[": "<backspace>",
             "<backspace>": "<capslock>",
             "<capslock>": "<esc>",
             "<control_l>": ["<control_l>", "<alt_l>"],
@@ -75,7 +74,7 @@ class MyLayerHandler(InputHandler):
 
         self_dict = {
             "<space>": "<space>",
-            "<tab>": "Z",
+            "<tab>": "<tab>",
             "<enter>": "<enter>",
             "<esc>": "<esc>",
             "<shift_l>": "-",
@@ -140,16 +139,16 @@ class MyLayerHandler(InputHandler):
                 "k": "*",
                 "l": "(",
                 ";": ")",
-                "z": "<F1>",
+                "z": "'",
                 "x": "[",
                 "c": "]",
-                "v": "|",
-                "b": "\\",
-                "n": "`",
+                "v": "_",
+                "b": "-",
+                "n": "+",
                 "m": "~",
                 ",": "{",
                 ".": "}",
-                "/": "+"
+                "/": "\""
             }, nothing)
         function_bindings = {
             ('<esc>', KeyEvent.key_down):
@@ -182,10 +181,12 @@ class MyLayerHandler(InputHandler):
                     "j": "<a-j>",
                     "k": "<a-k>",
                     "l": "<a-l>",
+                    ";": "=",
                     "a": "<pageup>",
                     "s": "<pagedown>",
                     "d": "<c-u>",
                     "f": "<c-d>",
+                    "g": "|",
                     "n": "<left>",
                     "m": "<down>",
                     ",": "<up>",
