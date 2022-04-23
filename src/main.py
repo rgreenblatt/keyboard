@@ -66,7 +66,7 @@ class KeyboardHandler(FileSystemEventHandler):
             if pid == 0:
                 try:
                     dev = InputDevice(keyboard.path)
-                    if "Gergo" in dev.name or "Keebio" in dev.name:
+                    if "Gergo" in dev.name or "Keebio" in dev.name or "Keyboardio" in dev.name:
                         return
                     handler = MyLayerHandler(self.debug)
                     dev.grab()
