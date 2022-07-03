@@ -27,19 +27,12 @@ def get_keyboards_by_name(name: str):
     )
 
 
-def get_foot_pedals():
-    return get_keyboards_by_name("FootSwitch")
-
-
-def get_gergoplex():
-    return get_keyboards_by_name("GergoPlex")
-
-
 if __name__ == "__main__":
-    pedal = list(get_foot_pedals())[0]
-    gergoplexs = list(get_keyboards_by_name('GergoPlex'))
+    pedalname = "FootSwitch"
+    pedals = list(get_keyboards_by_name(pedalname))
+    gergoplexs = list(get_keyboards_by_name("GergoPlex"))
 
-    inputs = list(map(InputDevice, [pedal] + gergoplexs))
+    inputs = list(map(InputDevice, pedals + gergoplexs))
     for inp in inputs:
         inp.grab()
 
@@ -86,8 +79,12 @@ if __name__ == "__main__":
         r, w, x = select(devices, [], [])
         for fd in r:
             for event in devices[fd].read():
-                if "FootSwitch" in devices[fd].name:
-                    if event.type == e.EV_KEY:
+                if pedalname in devices[fd].name:
+                    if (
+                        event.type == e.EV_KEY
+                        and event.code in code_char_map
+                        and code_char_map[event.code] == "b"
+                    ):
                         if event.value == KeyEvent.key_up:
                             down = False
                         elif event.value == KeyEvent.key_down:
